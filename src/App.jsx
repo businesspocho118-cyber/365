@@ -1,24 +1,88 @@
-import { useState, useEffect, useRef, Suspense, lazy } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MeshGradient } from '@paper-design/shaders-react'
-
-const Spline = lazy(() => import('@splinetool/react-spline'))
 
 // Fecha objetivo: 31 de octubre de 2026 a las 00:00:00
 const TARGET_DATE = new Date('2026-10-31T00:00:00').getTime()
 
-// SplineScene - scene 3D interactiva
-function SplineScene({ scene, className }) {
-  return (
-    <Suspense 
-      fallback={
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-        </div>
+// Robot interactivo que sigue al mouse
+function InteractiveRobot() {
+  const robotRef = useRef(null)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [isHovering, setIsHovering] = useState(false)
+  
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isHovering) {
+        // Movimiento sutil basado en mouse (solo cuando no está hover)
+        const x = (e.clientX - window.innerWidth / 2) / 30
+        const y = (e.clientY - window.innerHeight / 2) / 30
+        setPosition({ x, y })
       }
+    }
+    
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [isHovering])
+  
+  return (
+    <motion.div
+      ref={robotRef}
+      className="fixed bottom-8 right-8 z-20 cursor-pointer"
+      initial={{ opacity: 0 }}
+      animate={{ 
+        x: position.x,
+        y: position.y,
+        opacity: 1
+      }}
+      transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      whileHover={{ scale: 1.1 }}
     >
-      <Spline scene={scene} className={className} />
-    </Suspense>
+      <div className="relative w-24 h-24 md:w-32 md:h-32 flex items-center justify-center">
+        {/* Robot SVG animado */}
+        <motion.svg
+          viewBox="0 0 100 100"
+          className="w-full h-full"
+          animate={isHovering ? { rotate: [0, 5, -5, 0] } : {}}
+          transition={{ repeat: Infinity, duration: 0.5 }}
+        >
+          {/* Robot head */}
+          <rect x="20" y="15" width="60" height="50" rx="10" fill="#4c1d95" />
+          {/* Eyes */}
+          <motion.circle 
+            cx="38" cy="40" r="8" fill="#a855f7"
+            animate={{ scale: isHovering ? [1, 1.2, 1] : 1 }}
+            transition={{ repeat: Infinity, duration: 1 }}
+          />
+          <motion.circle 
+            cx="62" cy="40" r="8" fill="#a855f7"
+            animate={{ scale: isHovering ? [1, 1.2, 1] : 1 }}
+            transition={{ repeat: Infinity, duration: 1 }}
+          />
+          {/* Glow eyes */}
+          <circle cx="38" cy="40" r="4" fill="#fff" opacity="0.8" />
+          <circle cx="62" cy="40" r="4" fill="#fff" opacity="0.8" />
+          {/* Mouth */}
+          <rect x="35" y="55" width="30" height="4" rx="2" fill={isHovering ? '#f12b30' : '#8b5cf6'} />
+          {/* Antenna */}
+          <line x1="50" y1="15" x2="50" y2="5" stroke="#8b5cf6" strokeWidth="3" />
+          <circle cx="50" cy="5" r="4" fill="#a855f7">
+            <animate attributeName="opacity" values="0.5;1;0.5" dur="1s" repeatCount="indefinite" />
+          </circle>
+          {/* Body outline */}
+          <rect x="25" y="70" width="50" height="20" rx="5" fill="none" stroke="#8b5cf6" strokeWidth="2" opacity="0.5" />
+        </motion.svg>
+        
+        {/* Glow effect */}
+        <motion.div
+          className="absolute inset-0 rounded-full bg-purple-500/30 blur-xl -z-10"
+          animate={{ opacity: isHovering ? [0.3, 0.6, 0.3] : 0.2 }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+        />
+      </div>
+    </motion.div>
   )
 }
 
@@ -151,9 +215,6 @@ function App() {
   const [isExpired, setIsExpired] = useState(false)
   const [showCard, setShowCard] = useState(false)
   
-  // URL de la escena Spline
-  const splineSceneUrl = 'https://prod.spline.design/IfBEEpNTQ9ZA3jJz/scene.splinecode'
-  
   // URL de la imagen del personaje
   const characterImage = '/personaje.png'
 
@@ -214,17 +275,8 @@ function App() {
         </motion.span>
       </div>
       
-      {/* Spline 3D Widget - pequeño en esquina inferior derecha */}
-      {splineSceneUrl && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5 }}
-          className="absolute bottom-6 right-6 z-20 w-32 h-32 md:w-48 md:h-48 pointer-events-auto"
-        >
-          <SplineScene scene={splineSceneUrl} className="w-full h-full" />
-        </motion.div>
-      )}
+      {/* Robot interactivo SVG en esquina */}
+      <InteractiveRobot />
       
       {/* Botón de revelar en esquina superior DERECHA */}
       <motion.button
