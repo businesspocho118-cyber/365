@@ -625,7 +625,7 @@ function App() {
   const [isExpired, setIsExpired] = useState(false)
   const [showBook, setShowBook] = useState(false)
   
-  const characterImage = '/Imagen carta/365 THE BEGINNING.png'
+  const characterImage = '/images/book-cover.png'
 
   useEffect(() => {
     const timer = setInterval(() => {
