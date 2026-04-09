@@ -152,7 +152,7 @@ function App() {
   const [showCard, setShowCard] = useState(false)
   
   // URL de la escena Spline
-  const splineSceneUrl = 'https://my.spline.design/nexbotrobotcharacterconcept-LuH0GN4UsFW8876b5N7gou3T/'
+  const splineSceneUrl = 'https://prod.spline.design/IfBEEpNTQ9ZA3jJz/scene.splinecode'
   
   // URL de la imagen del personaje
   const characterImage = '/personaje.png'
