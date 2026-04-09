@@ -1,191 +1,179 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MeshGradient } from '@paper-design/shaders-react'
-import * as THREE from 'three'
 
 // Fecha objetivo: 31 de octubre de 2026 a las 00:00:00
 const TARGET_DATE = new Date('2026-10-31T00:00:00').getTime()
 
-// Woven Light Canvas Component ( Three.js )
-function WovenCanvas() {
-  const mountRef = useRef(null)
-
+// Playing Card Effect - Shader simple basado en el componente
+function CardEffect({ reveal = true }) {
+  const canvasRef = useRef(null)
+  
   useEffect(() => {
-    if (!mountRef.current) return
-
-    const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-    camera.position.z = 5
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    renderer.setSize(window.innerWidth, window.innerHeight)
-    renderer.setPixelRatio(window.devicePixelRatio)
-    mountRef.current.appendChild(renderer.domElement)
-
-    const mouse = new THREE.Vector2(0, 0)
-    const clock = new THREE.Clock()
-
-    // Woven Silk - Torus Knot particles
-    const particleCount = 30000
-    const positions = new Float32Array(particleCount * 3)
-    const originalPositions = new Float32Array(particleCount * 3)
-    const colors = new Float32Array(particleCount * 3)
-    const velocities = new Float32Array(particleCount * 3)
-
-    const geometry = new THREE.BufferGeometry()
-    const torusKnot = new THREE.TorusKnotGeometry(1.5, 0.5, 150, 24)
-
-    for (let i = 0; i < particleCount; i++) {
-      const vertexIndex = i % torusKnot.attributes.position.count
-      const x = torusKnot.attributes.position.getX(vertexIndex)
-      const y = torusKnot.attributes.position.getY(vertexIndex)
-      const z = torusKnot.attributes.position.getZ(vertexIndex)
-      
-      positions[i * 3] = x
-      positions[i * 3 + 1] = y
-      positions[i * 3 + 2] = z
-      originalPositions[i * 3] = x
-      originalPositions[i * 3 + 1] = y
-      originalPositions[i * 3 + 2] = z
-
-      // Morado/violeta para el estilo misterioso
-      const color = new THREE.Color()
-      const hue = 0.75 + Math.random() * 0.1 // Morado (0.75)
-      color.setHSL(hue, 0.7, 0.4 + Math.random() * 0.2)
-      colors[i * 3] = color.r
-      colors[i * 3 + 1] = color.g
-      colors[i * 3 + 2] = color.b
-      
-      velocities[i * 3] = 0
-      velocities[i * 3 + 1] = 0
-      velocities[i * 3 + 2] = 0
+    if (!reveal || !canvasRef.current) return
+    
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    
+    let animationId
+    let time = 0
+    
+    const resize = () => {
+      canvas.width = canvas.offsetWidth * 2
+      canvas.height = canvas.offsetHeight * 2
     }
-
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
-
-    const material = new THREE.PointsMaterial({
-      size: 0.015,
-      vertexColors: true,
-      blending: THREE.AdditiveBlending,
-      transparent: true,
-      opacity: 0.8,
-    })
-
-    const points = new THREE.Points(geometry, material)
-    scene.add(points)
-
-    const handleMouseMove = (event) => {
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
-    }
-    window.addEventListener('mousemove', handleMouseMove)
-
-    const animate = () => {
-      requestAnimationFrame(animate)
-      const elapsedTime = clock.getElapsedTime()
+    
+    const draw = () => {
+      time += 0.02
+      const w = canvas.width
+      const h = canvas.height
       
-      const mouseWorld = new THREE.Vector3(mouse.x * 3, mouse.y * 3, 0)
-
-      for (let i = 0; i < particleCount; i++) {
-        const ix = i * 3
-        const iy = i * 3 + 1
-        const iz = i * 3 + 2
-
-        const currentPos = new THREE.Vector3(positions[ix], positions[iy], positions[iz])
-        const originalPos = new THREE.Vector3(originalPositions[ix], originalPositions[iy], originalPositions[iz])
-        const velocity = new THREE.Vector3(velocities[ix], velocities[iy], velocities[iz])
-
-        const dist = currentPos.distanceTo(mouseWorld)
-        if (dist < 1.5) {
-          const force = (1.5 - dist) * 0.01
-          const direction = new THREE.Vector3().subVectors(currentPos, mouseWorld).normalize()
-          velocity.add(direction.multiplyScalar(force))
+      ctx.clearRect(0, 0, w, h)
+      
+      // Dots grid effect estilo playing card
+      const dotSize = 3
+      const gap = 8
+      const opacity = (Math.sin(time * 0.5) + 1) * 0.15 + 0.1
+      
+      ctx.fillStyle = `rgba(139, 92, 246, ${opacity})`
+      
+      for (let x = 0; x < w; x += gap) {
+        for (let y = 0; y < h; y += gap) {
+          const offset = Math.sin(x * 0.01 + time) * Math.cos(y * 0.01 + time * 0.5) * 10
+          ctx.beginPath()
+          ctx.arc(x + offset, y + offset * 0.5, dotSize, 0, Math.PI * 2)
+          ctx.fill()
         }
-
-        const returnForce = new THREE.Vector3().subVectors(originalPos, currentPos).multiplyScalar(0.001)
-        velocity.add(returnForce)
-        
-        velocity.multiplyScalar(0.95)
-
-        positions[ix] += velocity.x
-        positions[iy] += velocity.y
-        positions[iz] += velocity.z
-        
-        velocities[ix] = velocity.x
-        velocities[iy] = velocity.y
-        velocities[iz] = velocity.z
       }
-      geometry.attributes.position.needsUpdate = true
-
-      points.rotation.y = elapsedTime * 0.05
-      renderer.render(scene, camera)
+      
+      animationId = requestAnimationFrame(draw)
     }
-    animate()
-
-    const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight
-      camera.updateProjectionMatrix()
-      renderer.setSize(window.innerWidth, window.innerHeight)
-    }
-    window.addEventListener('resize', handleResize)
-
+    
+    resize()
+    window.addEventListener('resize', resize)
+    draw()
+    
     return () => {
-      window.removeEventListener('resize', handleResize)
-      window.removeEventListener('mousemove', handleMouseMove)
-      if (mountRef.current && renderer.domElement) {
-        mountRef.current.removeChild(renderer.domElement)
-      }
+      window.removeEventListener('resize', resize)
+      cancelAnimationFrame(animationId)
     }
-  }, [])
-
-  return <div ref={mountRef} className="absolute inset-0 z-0" />
+  }, [reveal])
+  
+  return (
+    <canvas 
+      ref={canvasRef} 
+      className="absolute inset-0 pointer-events-none"
+      style={{ zIndex: 1 }}
+    />
+  )
 }
 
-// Theme Switcher Component
-function ThemeSwitcher() {
-  const [isDark, setIsDark] = useState(true)
-
+// Playing Card Component
+function PlayingCard({ textArray = ['3', '6', '5'], onClick }) {
+  const [isHovered, setIsHovered] = useState(false)
+  const [showReveal, setShowReveal] = useState(false)
+  
+  const handleClick = () => {
+    setShowReveal(!showReveal)
+    onClick?.()
+  }
+  
   return (
-    <motion.button
-      onClick={() => setIsDark(!isDark)}
-      className="relative z-20 p-6 fixed top-0 right-0"
-      whileTap={{ scale: 0.95 }}
+    <motion.div
+      className="relative cursor-pointer"
+      style={{ maxWidth: '280px', width: '100%' }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClick}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
     >
-      <div className="relative flex h-12 w-20 items-center rounded-full p-1 transition-all duration-300"
+      {/* Outer border */}
+      <motion.div
+        className="absolute inset-0 rounded-3xl"
         style={{
-          background: isDark
-            ? 'radial-gradient(ellipse at top left, #1e1b4b 0%, #0f0a1f 40%, #05050a 100%)'
-            : 'radial-gradient(ellipse at top left, #fefefe 0%, #e2e8f0 40%, #cbd5e1 100%)',
-          boxShadow: isDark
-            ? 'inset 0 0 15px rgba(0, 0, 0, 0.5)'
-            : 'inset 0 0 15px rgba(148, 163, 184, 0.2)',
-          border: '2px solid rgba(139, 92, 246, 0.3)',
+          padding: '2px',
+          background: isHovered 
+            ? 'linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%)' 
+            : 'linear-gradient(135deg, #4c1d95 0%, #2e1065 100%)',
+          transition: 'all 0.3s ease'
+        }}
+      />
+      
+      {/* Inner card */}
+      <div
+        className="relative rounded-2xl overflow-hidden"
+        style={{
+          background: showReveal ? '#0a0a0a' : '#18192b',
+          aspectRatio: '9/16',
+          transition: 'all 0.5s ease'
         }}
       >
-        <motion.div
-          className="flex h-9 w-9 items-center justify-center rounded-full"
+        {/* Reveal canvas effect */}
+        {showReveal && <CardEffect reveal={showReveal} />}
+        
+        {/* Top text (normal) */}
+        <div
+          className="absolute top-4 left-4 flex flex-col z-10"
           style={{
-            background: isDark
-              ? 'linear-gradient(145deg, #6b21a8 0%, #4c1d95 50%, #2e1065 100%)'
-              : 'linear-gradient(145deg, #ffffff 0%, #fefefe 50%, #f8fafc 100%)',
-            boxShadow: isDark
-              ? 'inset 0 1px 2px rgba(255, 255, 255, 0.15), 0 2px 8px rgba(0, 0, 0, 0.6)'
-              : 'inset 0 1px 2px rgba(255, 255, 255, 1), 0 2px 8px rgba(0, 0, 0, 0.18)',
+            color: isHovered ? '#f12b30' : '#00a9fe',
+            fontSize: '32px',
+            fontWeight: 'bold',
+            letterSpacing: '4px',
+            transition: 'color 0.3s ease'
           }}
-          animate={{ x: isDark ? 44 : 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         >
-          <span className="text-sm">{isDark ? '🌙' : '☀️'}</span>
-        </motion.div>
+          {textArray.map((letter, i) => (
+            <div key={i}>{letter}</div>
+          ))}
+        </div>
+        
+        {/* Bottom text (mirrored) */}
+        <div
+          className="absolute bottom-4 right-4 flex flex-col z-10"
+          style={{
+            color: isHovered ? '#f12b30' : '#00a9fe',
+            fontSize: '32px',
+            fontWeight: 'bold',
+            letterSpacing: '4px',
+            transform: 'scale(-1)',
+            transition: 'color 0.3s ease'
+          }}
+        >
+          {textArray.map((letter, i) => (
+            <div key={i}>{letter}</div>
+          ))}
+        </div>
+        
+        {/* Center decoration */}
+        <div className="absolute inset-0 flex items-center justify-center z-5">
+          <motion.div
+            className="w-24 h-32 rounded-lg border-2 border-purple-500/30 flex items-center justify-center"
+            style={{
+              background: 'rgba(139, 92, 246, 0.1)',
+              borderColor: 'rgba(139, 92, 246, 0.3)'
+            }}
+            animate={{
+              borderColor: isHovered 
+                ? 'rgba(139, 92, 246, 0.8)' 
+                : 'rgba(139, 92, 246, 0.3)'
+            }}
+          >
+            <span className="text-4xl font-bold text-purple-400">
+              {textArray[0]}
+            </span>
+          </motion.div>
+        </div>
       </div>
-    </motion.button>
+    </motion.div>
   )
 }
 
 function App() {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft())
   const [isExpired, setIsExpired] = useState(false)
+  const [cardFlipped, setCardFlipped] = useState(false)
 
   function calculateTimeLeft() {
     const now = new Date().getTime()
@@ -218,32 +206,35 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
-      {/* Woven Light Canvas */}
-      <WovenCanvas />
-      
-      {/* MeshGradient overlay sutil */}
-      <div className="absolute inset-0 opacity-30">
+      {/* MeshGradient Background */}
+      <div className="absolute inset-0">
         <MeshGradient
-          colors={['#1a0a2e', '#2d1b4e', '#4c1d95', '#6b21a8', '#0a0a0a']}
-          speed={0.3}
-          distortion={0.4}
-          swirl={0.1}
+          colors={[
+            '#1a0a2e',
+            '#2d1b4e', 
+            '#4c1d95',
+            '#6b21a8',
+            '#0a0a0a'
+          ]}
+          speed={0.4}
+          distortion={0.6}
+          swirl={0.2}
           className="w-full h-full"
         />
       </div>
       
-      {/* Overlay para oscurecer */}
-      <div className="absolute inset-0 bg-[#0a0a0a]/60" />
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-[#0a0a0a]/50" />
       
-      {/* 365 grande de fondo - bien atras */}
+      {/* 365 large background */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
         <motion.span
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.03 }}
+          animate={{ opacity: 0.04 }}
           transition={{ duration: 2 }}
           className="text-[40vw] md:text-[50vw] font-black leading-none tracking-tight"
           style={{ 
-            fontFamily: '"Bebas Neue", "Inter", "Helvetica Neue", sans-serif',
+            fontFamily: '"Bebas Neue", "Inter", sans-serif',
             letterSpacing: '-0.02em',
             color: '#8b5cf6',
           }}
@@ -252,10 +243,7 @@ function App() {
         </motion.span>
       </div>
       
-      {/* Theme Switcher */}
-      <ThemeSwitcher />
-      
-      {/* Contenido principal */}
+      {/* Main content */}
       <main className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
         <AnimatePresence mode="wait">
           {isExpired ? (
@@ -272,6 +260,11 @@ function App() {
                 Las puertas se abrirán pronto
               </p>
             </motion.div>
+          ) : cardFlipped ? (
+            <PlayingCard 
+              textArray={['3', '6', '5']} 
+              onClick={() => setCardFlipped(false)}
+            />
           ) : (
             <motion.div
               key="countdown"
@@ -285,6 +278,19 @@ function App() {
             </motion.div>
           )}
         </AnimatePresence>
+        
+        {/* Click to show card hint */}
+        {!isExpired && !cardFlipped && (
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+            onClick={() => setCardFlipped(true)}
+            className="mt-12 text-purple-500/50 text-sm hover:text-purple-400 transition-colors"
+          >
+            Click para revelar carta
+          </motion.button>
+        )}
       </main>
     </div>
   )
