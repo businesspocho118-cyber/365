@@ -7,18 +7,41 @@ const Spline = lazy(() => import('@splinetool/react-spline'))
 // Fecha objetivo: 31 de octubre de 2026 a las 00:00:00
 const TARGET_DATE = new Date('2026-10-31T00:00:00').getTime()
 
-// Robot 3D interactivo
+// Robot 3D visual (placeholder emoji cuando no hay Spline)
 function InteractiveRobot({ sceneUrl }) {
+  // Si hay URL de Spline, usarla
+  if (sceneUrl) {
+    return (
+      <div className="w-32 h-32 md:w-48 md:h-48">
+        <Suspense fallback={
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        }>
+          <Spline scene={sceneUrl} className="w-full h-full" />
+        </Suspense>
+      </div>
+    )
+  }
+  
+  // Robot visual CSS como alternativa
   return (
-    <div className="w-48 h-48 md:w-64 md:h-64">
-      <Suspense fallback={
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-        </div>
-      }>
-        <Spline scene={sceneUrl} className="w-full h-full" />
-      </Suspense>
-    </div>
+    <motion.div
+      className="w-24 h-24 md:w-32 md:h-32 relative"
+      animate={{ y: [0, -10, 0] }}
+      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+    >
+      {/* Cuerpo del robot */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-6xl md:text-8xl">🤖</span>
+      </div>
+      {/* Efecto de brillo */}
+      <motion.div
+        className="absolute inset-0 rounded-full bg-purple-500/20 blur-xl"
+        animate={{ opacity: [0.3, 0.6, 0.3] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      />
+    </motion.div>
   )
 }
 
@@ -179,9 +202,8 @@ function App() {
   // const robotSceneUrl = 'https://prod.spline.design/YOUR_SCENE_URL/scene.splinecode'
   const robotSceneUrl = ''
   
-  // URL de la imagen del personaje
-  // Poné la URL de tu imagen aquí:
-  const characterImage = ''
+  // URL de la imagen del personaje (imagen local en public/)
+  const characterImage = '/personaje.png'
 
   function calculateTimeLeft() {
     const now = new Date().getTime()
@@ -244,16 +266,26 @@ function App() {
         </motion.span>
       </div>
       
-      {/* Robot 3D (cuando haya URL configurada)*/}
-      {robotSceneUrl && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="absolute top-4 right-4 z-20"
-        >
-          <InteractiveRobot sceneUrl={robotSceneUrl} />
-        </motion.div>
-      )}
+      {/* Botón de revelar en esquina superior izquierda */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        onClick={() => setShowCard(!showCard)}
+        className="absolute top-6 left-6 z-20 text-purple-500/50 text-xs hover:text-purple-400 transition-colors"
+      >
+        {showCard ? '← Volver' : 'Click para revelar'}
+      </motion.button>
+      
+      {/* Robot visual - siempre visible en esquina inferior derecha */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5 }}
+        className="absolute bottom-6 right-6 z-20"
+      >
+        <InteractiveRobot sceneUrl={robotSceneUrl} />
+      </motion.div>
       
       {/* Main content */}
       <main className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
@@ -291,30 +323,6 @@ function App() {
             </motion.div>
           )}
         </AnimatePresence>
-        
-        {!isExpired && !showCard && (
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1 }}
-            onClick={() => setShowCard(true)}
-            className="mt-12 text-purple-500/50 text-sm hover:text-purple-400 transition-colors"
-          >
-            Click para revelar
-          </motion.button>
-        )}
-        
-        {showCard && (
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            onClick={() => setShowCard(false)}
-            className="mt-8 text-purple-500/50 text-sm hover:text-purple-400 transition-colors"
-          >
-            Volver al cronómetro
-          </motion.button>
-        )}
       </main>
     </div>
   )
