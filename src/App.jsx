@@ -6,14 +6,13 @@ const TARGET_DATE = new Date('2026-10-31T00:00:00').getTime()
 
 // Shader Background estilo líquido/molecular
 function ShaderBackground() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const canvasRef = useRef(null)
 
   useEffect(() => {
-    if (!canvasRef.current) return
-
     const canvas = canvasRef.current
-    const gl = canvas.getContext('webgl')
+    if (!canvas) return
 
+    const gl = canvas.getContext('webgl')
     if (!gl) {
       console.error('WebGL not supported')
       return
@@ -70,15 +69,15 @@ function ShaderBackground() {
       }
     `
 
-    const vertexShader = gl.createShader(gl.VERTEX_SHADER)!
+    const vertexShader = gl.createShader(gl.VERTEX_SHADER)
     gl.shaderSource(vertexShader, vertexShaderSource)
     gl.compileShader(vertexShader)
 
-    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)!
+    const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER)
     gl.shaderSource(fragmentShader, fragmentShaderSource)
     gl.compileShader(fragmentShader)
 
-    const shaderProgram = gl.createProgram()!
+    const shaderProgram = gl.createProgram()
     gl.attachShader(shaderProgram, vertexShader)
     gl.attachShader(shaderProgram, fragmentShader)
     gl.linkProgram(shaderProgram)
