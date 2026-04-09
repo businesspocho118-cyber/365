@@ -214,9 +214,16 @@ function App() {
         </motion.span>
       </div>
       
-      {/* Spline 3D Scene - cuando hay URL configurada */}
+      {/* Spline 3D Widget - pequeño en esquina inferior derecha */}
       {splineSceneUrl && (
-        <SplineScene scene={splineSceneUrl} className="absolute inset-0 z-0" />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5 }}
+          className="absolute bottom-6 right-6 z-20 w-32 h-32 md:w-48 md:h-48 pointer-events-auto"
+        >
+          <SplineScene scene={splineSceneUrl} className="w-full h-full" />
+        </motion.div>
       )}
       
       {/* Botón de revelar en esquina superior DERECHA */}
