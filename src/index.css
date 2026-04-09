@@ -85,3 +85,59 @@ body {
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
+
+/* === FLIP COUNTDOWN - NUMEROS LIBRES SIN CAJAS === */
+.flip-countdown-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 16px;
+}
+
+.flip-unit {
+  position: relative;
+  perspective: 300px;
+}
+
+.flip-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  overflow: hidden;
+}
+
+.flipper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+}
+
+.flipper.is-flipping {
+  animation: flip-animation 0.5s ease-in-out forwards;
+}
+
+.flipper__top {
+  transform-origin: bottom center;
+}
+
+.flipper__bottom {
+  transform-origin: top center;
+}
+
+@keyframes flip-animation {
+  0% {
+    transform: rotateX(0deg);
+  }
+  50% {
+    transform: rotateX(-90deg);
+  }
+  100% {
+    transform: rotateX(0deg);
+  }
+}
