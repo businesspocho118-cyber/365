@@ -1,11 +1,28 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, Suspense, lazy } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MeshGradient } from '@paper-design/shaders-react'
+
+const Spline = lazy(() => import('@splinetool/react-spline'))
 
 // Fecha objetivo: 31 de octubre de 2026 a las 00:00:00
 const TARGET_DATE = new Date('2026-10-31T00:00:00').getTime()
 
-// Playing Card Effect - Shader simple basado en el componente
+// Robot 3D interactivo
+function InteractiveRobot({ sceneUrl }) {
+  return (
+    <div className="w-48 h-48 md:w-64 md:h-64">
+      <Suspense fallback={
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+      }>
+        <Spline scene={sceneUrl} className="w-full h-full" />
+      </Suspense>
+    </div>
+  )
+}
+
+// Card Effect con canvas
 function CardEffect({ reveal = true }) {
   const canvasRef = useRef(null)
   
@@ -31,7 +48,6 @@ function CardEffect({ reveal = true }) {
       
       ctx.clearRect(0, 0, w, h)
       
-      // Dots grid effect estilo playing card
       const dotSize = 3
       const gap = 8
       const opacity = (Math.sin(time * 0.5) + 1) * 0.15 + 0.1
@@ -61,35 +77,26 @@ function CardEffect({ reveal = true }) {
   }, [reveal])
   
   return (
-    <canvas 
-      ref={canvasRef} 
-      className="absolute inset-0 pointer-events-none"
-      style={{ zIndex: 1 }}
-    />
+    <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }} />
   )
 }
 
-// Playing Card Component
-function PlayingCard({ textArray = ['3', '6', '5'], onClick }) {
+// Playing Card CON IMAGEN
+function PlayingCard({ textArray, characterImage }) {
   const [isHovered, setIsHovered] = useState(false)
   const [showReveal, setShowReveal] = useState(false)
-  
-  const handleClick = () => {
-    setShowReveal(!showReveal)
-    onClick?.()
-  }
   
   return (
     <motion.div
       className="relative cursor-pointer"
-      style={{ maxWidth: '280px', width: '100%' }}
+      style={{ maxWidth: '300px', width: '100%' }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={handleClick}
+      onClick={() => setShowReveal(!showReveal)}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
-      {/* Outer border */}
+      {/* Border exterior */}
       <motion.div
         className="absolute inset-0 rounded-3xl"
         style={{
@@ -101,69 +108,62 @@ function PlayingCard({ textArray = ['3', '6', '5'], onClick }) {
         }}
       />
       
-      {/* Inner card */}
+      {/* Tarjeta interior */}
       <div
         className="relative rounded-2xl overflow-hidden"
         style={{
           background: showReveal ? '#0a0a0a' : '#18192b',
-          aspectRatio: '9/16',
+          aspectRatio: '3/4',
           transition: 'all 0.5s ease'
         }}
       >
-        {/* Reveal canvas effect */}
         {showReveal && <CardEffect reveal={showReveal} />}
         
-        {/* Top text (normal) */}
+        {/* Imagen del personaje / contenido central */}
+        <div className="absolute inset-0 flex items-center justify-center z-5">
+          {characterImage ? (
+            <img 
+              src={characterImage} 
+              alt="Character" 
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="text-center p-8">
+              <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-purple-600/20 flex items-center justify-center">
+                <span className="text-4xl">👤</span>
+              </div>
+              <p className="text-purple-400/60 text-sm">
+                Agrega una imagen aquí
+              </p>
+            </div>
+          )}
+        </div>
+        
+        {/* Texto arriba */}
         <div
           className="absolute top-4 left-4 flex flex-col z-10"
           style={{
             color: isHovered ? '#f12b30' : '#00a9fe',
-            fontSize: '32px',
+            fontSize: '28px',
             fontWeight: 'bold',
-            letterSpacing: '4px',
-            transition: 'color 0.3s ease'
+            letterSpacing: '4px'
           }}
         >
-          {textArray.map((letter, i) => (
-            <div key={i}>{letter}</div>
-          ))}
+          {textArray?.map((letter, i) => <div key={i}>{letter}</div>)}
         </div>
         
-        {/* Bottom text (mirrored) */}
+        {/* Texto abajo (espejado) */}
         <div
           className="absolute bottom-4 right-4 flex flex-col z-10"
           style={{
             color: isHovered ? '#f12b30' : '#00a9fe',
-            fontSize: '32px',
+            fontSize: '28px',
             fontWeight: 'bold',
             letterSpacing: '4px',
-            transform: 'scale(-1)',
-            transition: 'color 0.3s ease'
+            transform: 'scale(-1)'
           }}
         >
-          {textArray.map((letter, i) => (
-            <div key={i}>{letter}</div>
-          ))}
-        </div>
-        
-        {/* Center decoration */}
-        <div className="absolute inset-0 flex items-center justify-center z-5">
-          <motion.div
-            className="w-24 h-32 rounded-lg border-2 border-purple-500/30 flex items-center justify-center"
-            style={{
-              background: 'rgba(139, 92, 246, 0.1)',
-              borderColor: 'rgba(139, 92, 246, 0.3)'
-            }}
-            animate={{
-              borderColor: isHovered 
-                ? 'rgba(139, 92, 246, 0.8)' 
-                : 'rgba(139, 92, 246, 0.3)'
-            }}
-          >
-            <span className="text-4xl font-bold text-purple-400">
-              {textArray[0]}
-            </span>
-          </motion.div>
+          {textArray?.map((letter, i) => <div key={i}>{letter}</div>)}
         </div>
       </div>
     </motion.div>
@@ -173,7 +173,15 @@ function PlayingCard({ textArray = ['3', '6', '5'], onClick }) {
 function App() {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft())
   const [isExpired, setIsExpired] = useState(false)
-  const [cardFlipped, setCardFlipped] = useState(false)
+  const [showCard, setShowCard] = useState(false)
+  
+  // URL del robot 3D de Spline (obtenela desde splinetool.com)
+  // const robotSceneUrl = 'https://prod.spline.design/YOUR_SCENE_URL/scene.splinecode'
+  const robotSceneUrl = ''
+  
+  // URL de la imagen del personaje
+  // Poné la URL de tu imagen aquí:
+  const characterImage = ''
 
   function calculateTimeLeft() {
     const now = new Date().getTime()
@@ -209,13 +217,7 @@ function App() {
       {/* MeshGradient Background */}
       <div className="absolute inset-0">
         <MeshGradient
-          colors={[
-            '#1a0a2e',
-            '#2d1b4e', 
-            '#4c1d95',
-            '#6b21a8',
-            '#0a0a0a'
-          ]}
+          colors={['#1a0a2e', '#2d1b4e', '#4c1d95', '#6b21a8', '#0a0a0a']}
           speed={0.4}
           distortion={0.6}
           swirl={0.2}
@@ -223,7 +225,6 @@ function App() {
         />
       </div>
       
-      {/* Overlay */}
       <div className="absolute inset-0 bg-[#0a0a0a]/50" />
       
       {/* 365 large background */}
@@ -243,6 +244,17 @@ function App() {
         </motion.span>
       </div>
       
+      {/* Robot 3D (cuando haya URL configurada)*/}
+      {robotSceneUrl && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute top-4 right-4 z-20"
+        >
+          <InteractiveRobot sceneUrl={robotSceneUrl} />
+        </motion.div>
+      )}
+      
       {/* Main content */}
       <main className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
         <AnimatePresence mode="wait">
@@ -260,10 +272,10 @@ function App() {
                 Las puertas se abrirán pronto
               </p>
             </motion.div>
-          ) : cardFlipped ? (
+          ) : showCard ? (
             <PlayingCard 
-              textArray={['3', '6', '5']} 
-              onClick={() => setCardFlipped(false)}
+              textArray={['3', '6', '5']}
+              characterImage={characterImage}
             />
           ) : (
             <motion.div
@@ -272,23 +284,35 @@ function App() {
               animate={{ opacity: 1 }}
               className="flex gap-8 md:gap-16"
             >
-              <TimeUnit value={timeLeft.days} label="días" />
-              <TimeUnit value={timeLeft.hours} label="horas" />
-              <TimeUnit value={timeLeft.minutes} label="min" />
+              {/* SIN CAJAS - solo números grandes flotando */}
+              <MinimalTimeUnit value={timeLeft.days} label="días" />
+              <MinimalTimeUnit value={timeLeft.hours} label="horas" />
+              <MinimalTimeUnit value={timeLeft.minutes} label="min" />
             </motion.div>
           )}
         </AnimatePresence>
         
-        {/* Click to show card hint */}
-        {!isExpired && !cardFlipped && (
+        {!isExpired && !showCard && (
           <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            onClick={() => setCardFlipped(true)}
+            onClick={() => setShowCard(true)}
             className="mt-12 text-purple-500/50 text-sm hover:text-purple-400 transition-colors"
           >
-            Click para revelar carta
+            Click para revelar
+          </motion.button>
+        )}
+        
+        {showCard && (
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            onClick={() => setShowCard(false)}
+            className="mt-8 text-purple-500/50 text-sm hover:text-purple-400 transition-colors"
+          >
+            Volver al cronómetro
           </motion.button>
         )}
       </main>
@@ -296,31 +320,33 @@ function App() {
   )
 }
 
-function TimeUnit({ value, label }) {
+// TimeUnit MINIMAL - sin cajas
+function MinimalTimeUnit({ value, label }) {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center"
     >
-      <div className="relative">
-        <motion.div
-          animate={{ 
-            boxShadow: [
-              '0 0 30px rgba(139, 92, 246, 0.15)',
-              '0 0 60px rgba(139, 92, 246, 0.25)',
-              '0 0 30px rgba(139, 92, 246, 0.15)'
-            ]
-          }}
-          transition={{ duration: 3, repeat: Infinity }}
-          className="w-28 md:w-36 h-32 md:h-40 rounded-3xl bg-purple-900/15 border border-purple-500/15 backdrop-blur-md flex items-center justify-center"
-        >
-          <span className="text-6xl md:text-8xl font-light text-white tracking-tight">
-            {String(value).padStart(2, '0')}
-          </span>
-        </motion.div>
-      </div>
-      <span className="text-purple-400/60 text-xs md:text-sm mt-4 uppercase tracking-[0.3em]">{label}</span>
+      {/* Solo el número, muy grande, con glow sutil */}
+      <motion.span
+        animate={{ 
+          textShadow: [
+            '0 0 20px rgba(139, 92, 246, 0.3)',
+            '0 0 40px rgba(139, 92, 246, 0.5)',
+            '0 0 20px rgba(139, 92, 246, 0.3)'
+          ]
+        }}
+        transition={{ duration: 3, repeat: Infinity }}
+        className="text-7xl md:text-9xl font-light text-white tracking-tight"
+      >
+        {String(value).padStart(2, '0')}
+      </motion.span>
+      
+      {/* Label pequeño abajo */}
+      <span className="text-purple-400/50 text-xs md:text-sm mt-2 uppercase tracking-[0.3em]">
+        {label}
+      </span>
     </motion.div>
   )
 }
