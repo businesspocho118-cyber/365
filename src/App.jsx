@@ -151,9 +151,8 @@ function App() {
   const [isExpired, setIsExpired] = useState(false)
   const [showCard, setShowCard] = useState(false)
   
-  // URL de la escena Spline - obtener de splinetool.com
-  // Ejemplo: 'https://prod.spline.design/xxx/scene.splinecode'
-  const splineSceneUrl = 'https://app.spline.design/file/bbe994f0-fe21-46c1-b52a-a7677aee1534'
+  // URL de la escena Spline
+  const splineSceneUrl = 'https://my.spline.design/nexbotrobotcharacterconcept-LuH0GN4UsFW8876b5N7gou3T/'
   
   // URL de la imagen del personaje
   const characterImage = '/personaje.png'
