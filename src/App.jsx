@@ -5,7 +5,7 @@ import { MeshGradient } from '@paper-design/shaders-react'
 // Fecha objetivo: 31 de octubre de 2026 a las 00:00:00
 const TARGET_DATE = new Date('2026-10-31T00:00:00').getTime()
 
-// Robot interactivo con más movimiento
+// Robot más grande y centrado
 function InteractiveRobot({ onClick }) {
   const robotRef = useRef(null)
   const [position, setPosition] = useState({ x: 0, y: 0 })
@@ -13,8 +13,8 @@ function InteractiveRobot({ onClick }) {
   
   useEffect(() => {
     const handleMouseMove = (e) => {
-      const x = (e.clientX - window.innerWidth / 2) / 15
-      const y = (e.clientY - window.innerHeight / 2) / 15
+      const x = (e.clientX - window.innerWidth / 2) / 20
+      const y = (e.clientY - window.innerHeight / 2) / 20
       setPosition({ x, y })
     }
     
@@ -25,7 +25,8 @@ function InteractiveRobot({ onClick }) {
   return (
     <motion.div
       ref={robotRef}
-      className="fixed bottom-6 right-6 z-20 cursor-pointer"
+      className="fixed cursor-pointer z-20"
+      style={{ left: '50%', top: '50%', marginLeft: '-80px', marginTop: '-80px' }}
       initial={{ opacity: 0, scale: 0.5 }}
       animate={{ 
         x: position.x,
@@ -33,93 +34,119 @@ function InteractiveRobot({ onClick }) {
         opacity: 1,
         scale: 1
       }}
-      transition={{ type: 'spring', stiffness: 80, damping: 15 }}
+      transition={{ type: 'spring', stiffness: 60, damping: 12 }}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       onClick={onClick}
-      whileHover={{ scale: 1.15 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={{ scale: 1.2 }}
+      whileTap={{ scale: 0.9 }}
     >
-      <div className="relative w-28 h-28 md:w-36 md:h-36 flex items-center justify-center">
+      <div className="relative w-40 h-40 md:w-48 md:h-48 flex items-center justify-center">
         <motion.svg
           viewBox="0 0 100 100"
           className="w-full h-full"
-          animate={isHovering ? { rotate: [0, 8, -8, 0] } : { rotate: [0, 3, -3, 0] }}
-          transition={{ repeat: Infinity, duration: isHovering ? 0.3 : 1.5 }}
+          animate={isHovering ? { rotate: [0, 10, -10, 0] } : { rotate: [0, 4, -4, 0] }}
+          transition={{ repeat: Infinity, duration: isHovering ? 0.2 : 2 }}
         >
-          <rect x="20" y="15" width="60" height="50" rx="10" fill="#4c1d95" />
-          <motion.circle cx="38" cy="40" r="10" fill="#a855f7" animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: isHovering ? 0.5 : 1.5 }} />
-          <motion.circle cx="62" cy="40" r="10" fill="#a855f7" animate={{ scale: [1, 1.3, 1] }} transition={{ repeat: Infinity, duration: isHovering ? 0.5 : 1.5 }} />
-          <circle cx="38" cy="40" r="5" fill="#fff" opacity="0.9" />
-          <circle cx="62" cy="40" r="5" fill="#fff" opacity="0.9" />
-          <motion.rect x="35" y="55" width="30" height="6" rx="3" fill={isHovering ? '#f12b30' : '#8b5cf6'} animate={isHovering ? { width: [30, 35, 30] } : {}} transition={{ repeat: Infinity, duration: 0.5 }} />
-          <line x1="50" y1="15" x2="50" y2="3" stroke="#8b5cf6" strokeWidth="4" />
-          <motion.circle cx="50" cy="3" r="5" fill="#a855f7">
-            <animate attributeName="opacity" values="0.5;1;0.5" dur="0.5s" repeatCount="indefinite" />
+          {/* Robot head/body principal */}
+          <rect x="15" y="20" width="70" height="55" rx="12" fill="#4c1d95" />
+          
+          {/* Ojos grandes */}
+          <motion.circle cx="35" cy="45" r="12" fill="#a855f7" animate={{ scale: [1, 1.4, 1] }} transition={{ repeat: Infinity, duration: isHovering ? 0.3 : 1.5 }} />
+          <motion.circle cx="65" cy="45" r="12" fill="#a855f7" animate={{ scale: [1, 1.4, 1] }} transition={{ repeat: Infinity, duration: isHovering ? 0.3 : 1.5 }} />
+          {/* Brillo ojos */}
+          <circle cx="35" cy="45" r="6" fill="#fff" opacity="0.95" />
+          <circle cx="65" cy="45" r="6" fill="#fff" opacity="0.95" />
+          
+          {/* Boca */}
+          <motion.rect x="35" y="60" width="30" height="8" rx="4" fill={isHovering ? '#f12b30' : '#8b5cf6'} animate={isHovering ? { width: [30, 40, 30] } : {}} transition={{ repeat: Infinity, duration: 0.3 }} />
+          
+          {/* Antenna */}
+          <line x1="50" y1="20" x2="50" y2="5" stroke="#8b5cf6" strokeWidth="5" />
+          <motion.circle cx="50" cy="5" r="6" fill="#c084fc">
+            <animate attributeName="opacity" values="0.5;1;0.5" dur="0.3s" repeatCount="indefinite" />
           </motion.circle>
-          <rect x="20" y="70" width="60" height="22" rx="8" fill="none" stroke="#8b5cf6" strokeWidth="2" opacity="0.4" />
-          <motion.rect x="8" y="75" width="12" height="12" rx="4" fill="#4c1d95" animate={isHovering ? { rotation: [-10, 10, -10] } : {}} transition={{ repeat: Infinity, duration: 0.5 }} />
-          <motion.rect x="80" y="75" width="12" height="12" rx="4" fill="#4c1d95" animate={isHovering ? { rotation: [10, -10, 10] } : {}} transition={{ repeat: Infinity, duration: 0.5 }} />
+          
+          {/* Brazos */}
+          <motion.rect x="5" y="55" width="12" height="15" rx="5" fill="#4c1d95" animate={isHovering ? { rotation: [-15, 15, -15] } : {}} transition={{ repeat: Infinity, duration: 0.3 }} />
+          <motion.rect x="83" y="55" width="12" height="15" rx="5" fill="#4c1d95" animate={isHovering ? { rotation: [15, -15, 15] } : {}} transition={{ repeat: Infinity, duration: 0.3 }} />
+          
+          {/* Cuerpo */}
+          <rect x="20" y="78" width="60" height="15" rx="6" fill="none" stroke="#8b5cf6" strokeWidth="2.5" opacity="0.5" />
         </motion.svg>
-        <motion.div className="absolute inset-0 rounded-full bg-purple-500/40 blur-2xl -z-10" animate={{ opacity: isHovering ? [0.4, 0.7, 0.4] : 0.2 }} transition={{ repeat: Infinity, duration: 1 }} />
+        
+        {/* Glow effect */}
+        <motion.div className="absolute inset-0 rounded-full bg-pink-500/30 blur-3xl -z-10" animate={{ opacity: isHovering ? [0.5, 0.8, 0.5] : 0.15 }} transition={{ repeat: Infinity, duration: 0.8 }} />
       </div>
     </motion.div>
   )
 }
 
-// Book estilo 21st.dev
+// Book estilo real con páginas
 function Book({ characterImage }) {
   const [isOpen, setIsOpen] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   
   return (
-    <div className="group" style={{ perspective: '900px' }}>
+    <div className="group" style={{ perspective: '1200px' }}>
       <motion.div
-        className="relative w-56 md:w-72 h-72 md:h-96 cursor-pointer"
+        className="relative w-60 md:w-80 h-80 md:h-96 cursor-pointer"
         style={{ transformStyle: 'preserve-3d' }}
-        animate={{ rotateY: isOpen ? -25 : 0, scale: isOpen ? 1.1 : 1 }}
-        transition={{ duration: 0.6, type: 'spring' }}
+        animate={{ rotateY: isOpen ? -30 : 0, scale: isOpen ? 1.15 : 1 }}
+        transition={{ duration: 0.7, type: 'spring', stiffness: 50 }}
         onClick={() => setIsOpen(!isOpen)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Portada del libro */}
+        {/* Contraportada */}
+        <div className="absolute inset-0 rounded-r-md bg-gradient-to-b from-purple-950 via-purple-900 to-purple-950 shadow-2xl" style={{ transform: 'translateZ(-3px)' }}>
+          {/* Líneas de páginas */}
+          <div className="absolute left-2 top-2 bottom-2 w-full bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,#fff3_2px,#fff3_4px)] opacity-20" />
+          <div className="flex flex-col items-center justify-center h-full gap-2">
+            <p className="text-purple-300 font-medium tracking-widest">365</p>
+            <p className="text-purple-500/50 text-xs">Capítulo 1</p>
+            <p className="text-purple-600/40 text-xs mt-4">Coming Soon</p>
+            <p className="text-purple-700/30 text-xs mt-8 text-center px-4">31 de Octubre<br/>2026</p>
+          </div>
+        </div>
+        
+        {/* Páginas del medio */}
+        <div className="absolute right-1 top-2 w-3 h-[calc(100%-1rem)] bg-gradient-to-l from-white via-gray-100 to-gray-200 rounded-sm" style={{ transform: 'rotateY(90deg)', transformOrigin: 'left', boxShadow: '-2px 0 4px rgba(0,0,0,0.1)' }}>
+          {/* Líneas de texto simuladas */}
+          <div className="mt-3 ml-1 space-y-1">
+            {[...Array(15)].map((_, i) => (
+              <div key={i} className="h-0.5 w-16 bg-gray-300 rounded" style={{ opacity: 0.3 + Math.random() * 0.4 }} />
+            ))}
+          </div>
+        </div>
+        
+        {/* Portada principal */}
         <div className="absolute inset-0 rounded-r-md overflow-hidden shadow-2xl" style={{ backfaceVisibility: 'hidden' }}>
           <img src={characterImage} alt="Portada" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20" />
           
           {/* Título */}
           <div className="absolute bottom-0 left-0 right-0 p-6">
-            <h2 className="text-4xl md:text-5xl font-bold text-white" style={{ fontFamily: '"Bebas Neue", sans-serif' }}>365</h2>
-            <p className="text-purple-300 text-xs mt-1 uppercase tracking-widest">Una historia por revelar</p>
+            <h2 className="text-5xl md:text-6xl font-bold text-white tracking-widest" style={{ fontFamily: '"Bebas Neue", sans-serif', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>365</h2>
+            <p className="text-purple-300 text-xs mt-2 uppercase tracking-[0.3em]">Una historia por revelar</p>
           </div>
           
-          {/* Spine efecto */}
-          <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-r from-black/40 to-transparent" />
+          {/* Lomo / Spine */}
+          <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-black/50 via-black/30 to-transparent" />
           
           {/* Glow borde */}
-          <motion.div className="absolute inset-0 rounded-r-md border-2" animate={{ borderColor: isHovered ? 'rgba(139, 92, 246, 0.9)' : 'rgba(139, 92, 246, 0.3)' }} />
+          <motion.div className="absolute inset-0 rounded-r-md border-2" animate={{ borderColor: isHovered ? 'rgba(168, 85, 247, 0.9)' : 'rgba(168, 85, 247, 0.3)', boxShadow: isHovered ? '0 0 30px rgba(168, 85, 247, 0.4)' : 'none' }} transition={{ duration: 0.3 }} />
         </div>
         
-        {/* Páginas (cuando se abre) */}
-        <div className="absolute right-0 top-3 bottom-3 w-2 bg-gradient-to-l from-purple-900 via-white to-purple-100" style={{ transform: 'rotateY(90deg)', transformOrigin: 'left' }} />
-        
-        {/* Contraportada */}
-        <div className="absolute inset-0 rounded-r-md bg-purple-900 flex items-center justify-center shadow-inner" style={{ transform: 'translateZ(-4px)' }}>
-          <div className="relative">
-            <div className="absolute inset-0 bg-[repeating-linear-gradient(90deg,#fff,#fff_1px,#efefef_1px,#fff_3px)] opacity-30" />
-            <div className="text-center p-6 relative z-10">
-              <p className="text-purple-300 text-lg font-medium">Capítulo 1</p>
-              <p className="text-purple-400/60 text-sm mt-2">Coming Soon</p>
-              <p className="text-purple-500/40 text-xs mt-4">31 de Octubre, 2026</p>
-            </div>
-          </div>
+        {/* Título 3D en el lomo */}
+        <div className="absolute -left-8 top-1/2 -translate-y-1/2" style={{ transform: 'translateZ(2px)' }}>
+          <p className="text-purple-400/40 text-2xl font-bold tracking-widest" style={{ writingMode: 'vertical-rl', fontFamily: '"Bebas Neue", sans-serif' }}>365</p>
         </div>
       </motion.div>
       
       {/* Hint */}
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: isHovered && !isOpen ? 1 : 0 }} className="absolute -bottom-8 left-0 right-0 text-center text-purple-400/60 text-xs">
-        {isOpen ? '← Click' : 'Click para abrir'}
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: isHovered ? 1 : 0 }} className="absolute -bottom-10 left-0 right-0 text-center text-purple-400 text-xs">
+        {isOpen ? '← Volver' : 'Toca el robot para abrir'}
       </motion.p>
     </div>
   )
@@ -176,26 +203,21 @@ function App() {
         </motion.span>
       </div>
       
-      {/* Robot */}
+      {/* Robot grande y centrado */}
       <InteractiveRobot onClick={() => setShowBook(!showBook)} />
       
-      {/* Botón */}
-      <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }} onClick={() => setShowBook(!showBook)} className="absolute top-6 right-6 z-20 text-purple-500/50 text-xs hover:text-purple-400 transition-colors">
-        {showBook ? '← Volver' : 'Click para revelar'}
-      </motion.button>
-      
-      {/* Main content */}
-      <main className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
+      {/* Main content - debajo del robot */}
+      <main className="absolute inset-0 flex flex-col items-center justify-end pb-8 px-4 z-10">
         <AnimatePresence mode="wait">
           {isExpired ? (
-            <motion.div key="expired" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
+            <motion.div key="expired" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center mb-32">
               <h2 className="text-5xl md:text-7xl font-bold text-transparent bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text">Espera</h2>
               <p className="text-2xl md:text-3xl text-purple-300 mt-4">Las puertas se abrirán pronto</p>
             </motion.div>
           ) : showBook ? (
             <Book key="book" characterImage={characterImage} />
           ) : (
-            <motion.div key="countdown" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-8 md:gap-16">
+            <motion.div key="countdown" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-6 md:gap-12 mb-32">
               <MinimalTimeUnit value={timeLeft.days} label="días" />
               <MinimalTimeUnit value={timeLeft.hours} label="horas" />
               <MinimalTimeUnit value={timeLeft.minutes} label="min" />
@@ -210,10 +232,10 @@ function App() {
 function MinimalTimeUnit({ value, label }) {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center">
-      <motion.span animate={{ textShadow: ['0 0 20px rgba(139, 92, 246, 0.3)', '0 0 40px rgba(139, 92, 246, 0.5)', '0 0 20px rgba(139, 92, 246, 0.3)'] }} transition={{ duration: 3, repeat: Infinity }} className="text-7xl md:text-9xl font-light text-white tracking-tight">
+      <motion.span animate={{ textShadow: ['0 0 20px rgba(139, 92, 246, 0.3)', '0 0 40px rgba(139, 92, 246, 0.5)', '0 0 20px rgba(139, 92, 246, 0.3)'] }} transition={{ duration: 3, repeat: Infinity }} className="text-5xl md:text-7xl font-light text-white tracking-tight">
         {String(value).padStart(2, '0')}
       </motion.span>
-      <span className="text-purple-400/50 text-xs md:text-sm mt-2 uppercase tracking-[0.3em]">{label}</span>
+      <span className="text-purple-400/50 text-xs md:text-sm mt-1 uppercase tracking-[0.3em]">{label}</span>
     </motion.div>
   )
 }
