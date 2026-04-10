@@ -51,7 +51,7 @@ const FlipUnit = ({ digit }) => {
 }
 
 // --- Flip Countdown Principal ---
-const FlipCountdown = ({ targetDate }) => {
+const FlipCountdown = ({ targetDate, onTimeUpdate }) => {
   const [timeLeft, setTimeLeft] = useState(() => {
     const now = new Date().getTime()
     const difference = targetDate - now
@@ -77,16 +77,18 @@ const FlipCountdown = ({ targetDate }) => {
         return
       }
       
-      setTimeLeft({
+      const newTime = {
         days: Math.floor(difference / (1000 * 60 * 60 * 24)),
         hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
         minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
         seconds: Math.floor((difference % (1000 * 60)) / 1000)
-      })
+      }
+      setTimeLeft(newTime)
+      onTimeUpdate?.(newTime)
     }, 1000)
     
     return () => clearInterval(timer)
-  }, [targetDate])
+  }, [targetDate, onTimeUpdate])
 
   // Pad digits - days can be 3 digits, hours/minutes/seconds are 2 digits
   const paddedDays = String(timeLeft.days).padStart(3, '0')
@@ -621,9 +623,109 @@ function Book({ characterImage }) {
   )
 }
 
+// --- Basketball Ball Easter Egg ---
+const BASKBALL_MESSAGES = [
+  "Paciencia...",
+  "Es mucho tiempo o poco depende como lo mires",
+  "Aún se está trabajando",
+  "Un regalo? No, una experiencia"
+]
+
+function BasketballEasterEgg({ isVisible, onClick }) {
+  const [currentMessage, setCurrentMessage] = useState(BASKBALL_MESSAGES[0])
+  const [showMessage, setShowMessage] = useState(false)
+
+  useEffect(() => {
+    if (isVisible && !showMessage) {
+      setCurrentMessage(BASKBALL_MESSAGES[Math.floor(Math.random() * BASKBALL_MESSAGES.length)])
+    }
+  }, [isVisible])
+
+  const handleClick = () => {
+    setShowMessage(!showMessage)
+    if (!showMessage) {
+      // New random message
+      const newMessage = BASKBALL_MESSAGES[Math.floor(Math.random() * BASKBALL_MESSAGES.length)]
+      setCurrentMessage(newMessage)
+    }
+  }
+
+  if (!isVisible) return null
+
+  return (
+    <motion.div
+      className="fixed z-30 cursor-pointer"
+      style={{ right: '15%', top: '40%' }}
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0, opacity: 0 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+      onClick={handleClick}
+    >
+      {/* Glow effect */}
+      <div className="absolute inset-0 rounded-full bg-orange-500/50 blur-3xl -z-10 animate-pulse" />
+      
+      {/* Basketball SVG */}
+      <motion.div
+        className="w-20 h-20 md:w-24 md:h-24"
+        animate={{ 
+          rotate: [0, 5, -5, 0],
+          y: [0, -5, 0]
+        }}
+        transition={{ repeat: Infinity, duration: 2 }}
+      >
+        <svg viewBox="0 0 100 100" className="w-full h-full">
+          {/* Ball base */}
+          <circle cx="50" cy="50" r="48" fill="#FF6B00" />
+          <circle cx="50" cy="50" r="46" fill="#FF6B00" stroke="#E55A00" strokeWidth="2" />
+          
+          {/* Lines */}
+          <ellipse cx="50" cy="50" rx="46" ry="12" fill="none" stroke="#1a1a1a" strokeWidth="2.5" />
+          <ellipse cx="50" cy="50" rx="12" ry="46" fill="none" stroke="#1a1a1a" strokeWidth="2.5" />
+          <path d="M 50 2 Q 50 50 98 50" fill="none" stroke="#1a1a1a" strokeWidth="2.5" />
+          <path d="M 50 98 Q 50 50 2 50" fill="none" stroke="#1a1a1a" strokeWidth="2.5" />
+          
+          {/* Highlight */}
+          <ellipse cx="35" cy="35" rx="12" ry="8" fill="white" opacity="0.2" />
+        </svg>
+      </motion.div>
+
+      {/* Message bubble */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8, y: 10 }}
+        animate={{ 
+          opacity: showMessage ? 1 : 0, 
+          scale: showMessage ? 1 : 0.8,
+          y: showMessage ? 0 : 10
+        }}
+        className="absolute left-full ml-3 top-1/2 -translate-y-1/2 w-48 md:w-56"
+        style={{ pointerEvents: showMessage ? 'auto' : 'none' }}
+      >
+        <div className="bg-gradient-to-br from-gray-900 to-gray-800 border border-orange-500/50 rounded-xl p-3 shadow-xl">
+          <p className="text-white text-sm md:text-base font-medium leading-tight">
+            {currentMessage}
+          </p>
+        </div>
+        {/* Triangle pointer */}
+        <div className="absolute right-full top-1/2 -translate-y-1/2 -mr-2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[12px] border-r-gray-800" />
+      </motion.div>
+    </motion.div>
+  )
+}
+
 function App() {
   const [isExpired, setIsExpired] = useState(false)
   const [showBook, setShowBook] = useState(false)
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 })
+  
+  // Detectar si hay un 19 en cualquier posición
+  const hasNineteen = useMemo(() => {
+    const daysStr = String(timeLeft.days).padStart(3, '0')
+    const hoursStr = String(timeLeft.hours).padStart(2, '0')
+    const minutesStr = String(timeLeft.minutes).padStart(2, '0')
+    
+    return daysStr.includes('19') || hoursStr.includes('19') || minutesStr.includes('19')
+  }, [timeLeft])
   
   const characterImage = '/images/book-cover.png'
 
@@ -635,7 +737,14 @@ function App() {
       if (difference <= 0) {
         setIsExpired(true)
         clearInterval(timer)
+        return
       }
+      
+      setTimeLeft({
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
+      })
     }, 1000)
     return () => clearInterval(timer)
   }, [])
@@ -672,12 +781,14 @@ function App() {
           <Book characterImage={characterImage} />
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <FlipCountdown targetDate={TARGET_DATE} />
+            <FlipCountdown targetDate={TARGET_DATE} onTimeUpdate={setTimeLeft} />
           </motion.div>
         )}
       </main>
       
       <InteractiveRobot onClick={() => setShowBook(!showBook)} showBook={showBook} />
+      
+      <BasketballEasterEgg isVisible={hasNineteen && !showBook} onClick={() => {}} />
     </div>
   )
 }
