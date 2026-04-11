@@ -94,6 +94,7 @@ const FlipCountdown = ({ targetDate, onTimeUpdate }) => {
   const paddedDays = String(timeLeft.days).padStart(3, '0')
   const paddedHours = String(timeLeft.hours).padStart(2, '0')
   const paddedMinutes = String(timeLeft.minutes).padStart(2, '0')
+  const paddedSeconds = String(timeLeft.seconds || 0).padStart(2, '0')
 
   return (
     <div className="flip-countdown-wrapper flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
@@ -129,6 +130,18 @@ const FlipCountdown = ({ targetDate, onTimeUpdate }) => {
           ))}
         </div>
         <span className="text-purple-400/70 text-lg md:text-2xl mt-3 uppercase tracking-[0.5em] font-semibold">MINUTES</span>
+      </div>
+      
+      <span className="text-purple-400/50 text-5xl md:text-7xl font-light -mt-10">:</span>
+      
+      {/* SECONDS */}
+      <div className="flex flex-col items-center">
+        <div className="flex items-baseline">
+          {paddedSeconds.split('').map((digit, index) => (
+            <FlipUnit key={`seconds-${index}`} digit={digit} />
+          ))}
+        </div>
+        <span className="text-purple-400/70 text-lg md:text-2xl mt-3 uppercase tracking-[0.5em] font-semibold">SECONDS</span>
       </div>
     </div>
   )
@@ -624,7 +637,7 @@ function Book({ characterImage }) {
 }
 
 // --- Unicorn Easter Egg (Undertale/Pokemon style) ---
-const UNICORN_MESSAGES = [
+const PIPO_MESSAGES = [
   "Paciencia...",
   "Es mucho tiempo o poco depende como lo mires",
   "Aún se está trabajando",
@@ -632,8 +645,8 @@ const UNICORN_MESSAGES = [
 ]
 
 // Images loaded from public folder
-const UNICORN_SPEAKING = '/images/unicorn-speaking.png'  // boca abierta
-const UNICORN_IDLE = '/images/unicorn-idle.png'    // boca cerrada
+const PIPO_SPEAKING = '/images/unicorn-speaking.png'  // boca abierta
+const PIPO_IDLE = '/images/unicorn-idle.png'    // boca cerrada
 
 function UnicornEasterEgg({ isVisible }) {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -642,7 +655,7 @@ function UnicornEasterEgg({ isVisible }) {
   const [displayedText, setDisplayedText] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   
-  const currentMessage = UNICORN_MESSAGES[currentMessageIndex]
+  const currentMessage = PIPO_MESSAGES[currentMessageIndex]
   
   // Typewriter effect
   useEffect(() => {
@@ -670,7 +683,7 @@ function UnicornEasterEgg({ isVisible }) {
   
   // Cycle to next random message
   const nextMessage = () => {
-    const nextIndex = Math.floor(Math.random() * UNICORN_MESSAGES.length)
+    const nextIndex = Math.floor(Math.random() * PIPO_MESSAGES.length)
     setCurrentMessageIndex(nextIndex)
   }
   
@@ -728,7 +741,7 @@ function UnicornEasterEgg({ isVisible }) {
         >
           {/* Unicorn image - alternating between speaking and idle */}
           <img 
-            src={showDialogue && isExpanded ? UNICORN_SPEAKING : UNICORN_IDLE}
+            src={showDialogue && isExpanded ? PIPO_SPEAKING : PIPO_IDLE}
             alt="Unicornio Mágico"
             className={`${isExpanded ? 'w-48 md:w-64' : 'w-16 md:w-20'} object-contain`}
             style={{ filter: 'drop-shadow(0 0 25px rgba(139, 92, 246, 0.8))' }}
@@ -746,7 +759,7 @@ function UnicornEasterEgg({ isVisible }) {
             <div className="bg-black/95 border-4 border-purple-500 rounded-lg p-4 relative shadow-2xl">
               {/* Character name */}
               <div className="absolute -top-5 left-4 bg-purple-600 text-white text-xs md:text-sm px-4 py-1 rounded font-bold tracking-wider">
-                UNICORNIO
+                PIPOIO
               </div>
               
               {/* Message text with typewriter */}
@@ -757,7 +770,7 @@ function UnicornEasterEgg({ isVisible }) {
               
               {/* Click for next message hint */}
               <div className="text-purple-400/70 text-xs mt-3 text-right">
-                CLICK UNICORNIO FOR NEXT MESSAGE
+                CLICK PIPOIO FOR NEXT MESSAGE
               </div>
               
               {/* X button to close */}
@@ -789,15 +802,16 @@ function UnicornEasterEgg({ isVisible }) {
 function App() {
   const [isExpired, setIsExpired] = useState(false)
   const [showBook, setShowBook] = useState(false)
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 })
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   
   // Detectar si hay un 19 en cualquier posición
   const hasNineteen = useMemo(() => {
     const daysStr = String(timeLeft.days).padStart(3, '0')
     const hoursStr = String(timeLeft.hours).padStart(2, '0')
     const minutesStr = String(timeLeft.minutes).padStart(2, '0')
+    const secondsStr = String(timeLeft.seconds || 0).padStart(2, '0')
     
-    return daysStr.includes('19') || hoursStr.includes('19') || minutesStr.includes('19')
+    return daysStr.includes('19') || hoursStr.includes('19') || minutesStr.includes('19') || secondsStr.includes('19')
   }, [timeLeft])
   
   const characterImage = '/images/book-cover.png'
@@ -816,7 +830,8 @@ function App() {
       setTimeLeft({
         days: Math.floor(difference / (1000 * 60 * 60 * 24)),
         hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
+        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((difference % (1000 * 60)) / 1000)
       })
     }, 1000)
     return () => clearInterval(timer)
