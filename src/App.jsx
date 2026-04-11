@@ -759,7 +759,7 @@ function UnicornEasterEgg({ isVisible }) {
             <div className="bg-black/95 border-4 border-purple-500 rounded-lg p-4 relative shadow-2xl">
               {/* Character name */}
               <div className="absolute -top-5 left-4 bg-purple-600 text-white text-xs md:text-sm px-4 py-1 rounded font-bold tracking-wider">
-                PIPOIO
+PIPO
               </div>
               
               {/* Message text with typewriter */}
@@ -770,7 +770,7 @@ function UnicornEasterEgg({ isVisible }) {
               
               {/* Click for next message hint */}
               <div className="text-purple-400/70 text-xs mt-3 text-right">
-                CLICK PIPOIO FOR NEXT MESSAGE
+                CLICK PIPO FOR OTRO MENSAJE
               </div>
               
               {/* X button to close */}
