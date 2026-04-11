@@ -770,7 +770,7 @@ PIPO
               
               {/* Click for next message hint */}
               <div className="text-purple-400/70 text-xs mt-3 text-right">
-                CLICK PIPO FOR OTRO MENSAJE
+                CLICK EN PIPO PARA OTRO MENSAJE
               </div>
               
               {/* X button to close */}
