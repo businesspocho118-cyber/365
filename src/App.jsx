@@ -636,12 +636,42 @@ function Book({ characterImage }) {
   )
 }
 
-// --- Unicorn Easter Egg (Undertale/Pokemon style) ---
+// --- Pipo Easter Egg (Undertale/Pokemon style) ---
 const PIPO_MESSAGES = [
-  "Paciencia...",
-  "Es mucho tiempo o poco depende como lo mires",
-  "Aún se está trabajando",
-  "Un regalo? No, una experiencia"
+  "Cuanto tiempo pasarias haciendo un regalo?",
+  "Mucho o poco tiempo? Depende desde donde lo mires",
+  "Paciencia……",
+  "La punta de el iceberg",
+  "1996 sera importante luego",
+  "Te gusta jugar a ser detective?",
+  "Cuanto tiempo falta?",
+  "Muchos secretos que descubrir",
+  "1……..9",
+  "8 fases",
+  "Hecho desde 0 y solo con un objetivo",
+  "Cada dia haciendo algo mas",
+  "Un regalo? Nah, Una experiencia",
+  "El proyecto mas grande de mi vida",
+  "Aun falta",
+  "No seas impaciente",
+  "Cuantos mensajes crees que he echo?",
+  "Siempre un paso por delante",
+  "……………",
+  "Recomiendo que le tomes captura a el cronometro",
+  "Consejo: Nunca pienses que descubriste todo",
+  "Nombre futbolista, Codigo, Nombre artista, Pokemon favorito",
+  "Se te va a hacer mas facil si empiezas desde ahora",
+  "Confio en que lo superaras",
+  "365",
+  "Sera todo esto un sueno?",
+  "34536",
+  "No quieras entender todo desde el principio, disfruta de la incertidumbre",
+  "Cada dia es uno menos. O uno mas?",
+  "Muchas preguntas pocas respuestas",
+  "Japon",
+  "L̋i̓b͊r̯ó 3Ć҉Ö̵̗́6̵R̵̹U̷̮5T̶E̸̪D̷",
+  "No te puedo dar mas pistas",
+  "Disfruta de el proceso"
 ]
 
 // Images loaded from public folder
