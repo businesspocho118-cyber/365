@@ -623,93 +623,166 @@ function Book({ characterImage }) {
   )
 }
 
-// --- Basketball Ball Easter Egg ---
-const BASKBALL_MESSAGES = [
+// --- Unicorn Easter Egg (Undertale/Pokemon style) ---
+const UNICORN_MESSAGES = [
   "Paciencia...",
   "Es mucho tiempo o poco depende como lo mires",
   "Aún se está trabajando",
   "Un regalo? No, una experiencia"
 ]
 
-function BasketballEasterEgg({ isVisible, onClick }) {
-  const [currentMessage, setCurrentMessage] = useState(BASKBALL_MESSAGES[0])
-  const [showMessage, setShowMessage] = useState(false)
+// Images loaded from public folder
+const UNICORN_SPEAKING = '/images/unicorn-speaking.png'  // boca abierta
+const UNICORN_IDLE = '/images/unicorn-idle.png'    // boca cerrada
 
+function UnicornEasterEgg({ isVisible }) {
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [showDialogue, setShowDialogue] = useState(false)
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
+  const [displayedText, setDisplayedText] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
+  
+  const currentMessage = UNICORN_MESSAGES[currentMessageIndex]
+  
+  // Typewriter effect
   useEffect(() => {
-    if (isVisible && !showMessage) {
-      setCurrentMessage(BASKBALL_MESSAGES[Math.floor(Math.random() * BASKBALL_MESSAGES.length)])
+    if (!showDialogue) {
+      setDisplayedText('')
+      return
     }
-  }, [isVisible])
-
-  const handleClick = () => {
-    setShowMessage(!showMessage)
-    if (!showMessage) {
-      // New random message
-      const newMessage = BASKBALL_MESSAGES[Math.floor(Math.random() * BASKBALL_MESSAGES.length)]
-      setCurrentMessage(newMessage)
+    
+    setDisplayedText('')
+    setIsTyping(true)
+    let index = 0
+    
+    const typeInterval = setInterval(() => {
+      if (index < currentMessage.length) {
+        setDisplayedText(currentMessage.slice(0, index + 1))
+        index++
+      } else {
+        setIsTyping(false)
+        clearInterval(typeInterval)
+      }
+    }, 50)
+    
+    return () => clearInterval(typeInterval)
+  }, [currentMessageIndex, showDialogue])
+  
+  // Cycle to next random message
+  const nextMessage = () => {
+    const nextIndex = Math.floor(Math.random() * UNICORN_MESSAGES.length)
+    setCurrentMessageIndex(nextIndex)
+  }
+  
+  const handleExpand = () => {
+    if (isExpanded) {
+      // Close dialogue
+      setShowDialogue(false)
+      setDisplayedText('')
+      setTimeout(() => setIsExpanded(false), 300)
+    } else {
+      // Expand to center
+      setIsExpanded(true)
+      setShowDialogue(true)
+      // Pick random message on open
+      nextMessage()
     }
   }
-
+  
+  // Handle click on unicorn (for next message)
+  const handleClick = () => {
+    if (isExpanded && showDialogue) {
+      nextMessage()
+    }
+  }
+  
   if (!isVisible) return null
-
+  
   return (
-    <motion.div
-      className="fixed z-30 cursor-pointer"
-      style={{ right: '15%', top: '40%' }}
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0, opacity: 0 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-      onClick={handleClick}
-    >
-      {/* Glow effect */}
-      <div className="absolute inset-0 rounded-full bg-orange-500/50 blur-3xl -z-10 animate-pulse" />
+    <>
+      {/* Dark overlay when expanded (70%) */}
+      {isExpanded && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-40 bg-black/70"
+          onClick={() => setIsExpanded(false)}
+        />
+      )}
       
-      {/* Basketball SVG */}
+      {/* Unicorn container */}
       <motion.div
-        className="w-20 h-20 md:w-24 md:h-24"
-        animate={{ 
-          rotate: [0, 5, -5, 0],
-          y: [0, -5, 0]
+        className={`fixed z-50 ${isExpanded ? 'inset-0 flex items-center justify-center' : 'top-4 right-4'}`}
+        initial={false}
+        animate={{
+          scale: isExpanded ? 1 : 0.5
         }}
-        transition={{ repeat: Infinity, duration: 2 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       >
-        <svg viewBox="0 0 100 100" className="w-full h-full">
-          {/* Ball base */}
-          <circle cx="50" cy="50" r="48" fill="#FF6B00" />
-          <circle cx="50" cy="50" r="46" fill="#FF6B00" stroke="#E55A00" strokeWidth="2" />
-          
-          {/* Lines */}
-          <ellipse cx="50" cy="50" rx="46" ry="12" fill="none" stroke="#1a1a1a" strokeWidth="2.5" />
-          <ellipse cx="50" cy="50" rx="12" ry="46" fill="none" stroke="#1a1a1a" strokeWidth="2.5" />
-          <path d="M 50 2 Q 50 50 98 50" fill="none" stroke="#1a1a1a" strokeWidth="2.5" />
-          <path d="M 50 98 Q 50 50 2 50" fill="none" stroke="#1a1a1a" strokeWidth="2.5" />
-          
-          {/* Highlight */}
-          <ellipse cx="35" cy="35" rx="12" ry="8" fill="white" opacity="0.2" />
-        </svg>
+        <motion.div
+          className="cursor-pointer"
+          onClick={isExpanded ? handleClick : handleExpand}
+          animate={isExpanded ? { scale: [1, 1.02, 1] } : { y: [0, -3, 0] }}
+          transition={{ repeat: isExpanded ? Infinity : 0, duration: 2 }}
+        >
+          {/* Unicorn image - alternating between speaking and idle */}
+          <img 
+            src={showDialogue && isExpanded ? UNICORN_SPEAKING : UNICORN_IDLE}
+            alt="Unicornio Mágico"
+            className={`${isExpanded ? 'w-48 md:w-64' : 'w-16 md:w-20'} object-contain`}
+            style={{ filter: 'drop-shadow(0 0 25px rgba(139, 92, 246, 0.8))' }}
+          />
+        </motion.div>
+        
+        {/* Dialogue Box (when expanded) */}
+        {isExpanded && showDialogue && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute bottom-8 md:bottom-16 left-1/2 -translate-x-1/2 w-[90%] md:w-[600px]"
+          >
+            {/* Dialogue box */}
+            <div className="bg-black/95 border-4 border-purple-500 rounded-lg p-4 relative shadow-2xl">
+              {/* Character name */}
+              <div className="absolute -top-5 left-4 bg-purple-600 text-white text-xs md:text-sm px-4 py-1 rounded font-bold tracking-wider">
+                UNICORNIO
+              </div>
+              
+              {/* Message text with typewriter */}
+              <p className="text-white text-lg md:text-xl mt-3 font-mono min-h-[3rem] leading-relaxed">
+                {displayedText}
+                {isTyping && <span className="animate-pulse text-purple-400">▊</span>}
+              </p>
+              
+              {/* Click for next message hint */}
+              <div className="text-purple-400/70 text-xs mt-3 text-right">
+                CLICK UNICORNIO FOR NEXT MESSAGE
+              </div>
+              
+              {/* X button to close */}
+              <button
+                onClick={handleExpand}
+                className="absolute -top-4 -right-4 w-10 h-10 bg-red-600 hover:bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-xl border-2 border-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+            
+            {/* Continue indicator */}
+            <div className="flex justify-end mt-2 pr-2">
+              <motion.span
+                animate={{ opacity: [0, 1, 0], y: [0, 3, 0] }}
+                transition={{ repeat: Infinity, duration: 0.8 }}
+                className="text-purple-400 text-2xl"
+              >
+                ▼
+              </motion.span>
+            </div>
+          </motion.div>
+        )}
       </motion.div>
-
-      {/* Message bubble */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8, y: 10 }}
-        animate={{ 
-          opacity: showMessage ? 1 : 0, 
-          scale: showMessage ? 1 : 0.8,
-          y: showMessage ? 0 : 10
-        }}
-        className="absolute left-full ml-3 top-1/2 -translate-y-1/2 w-48 md:w-56"
-        style={{ pointerEvents: showMessage ? 'auto' : 'none' }}
-      >
-        <div className="bg-gradient-to-br from-gray-900 to-gray-800 border border-orange-500/50 rounded-xl p-3 shadow-xl">
-          <p className="text-white text-sm md:text-base font-medium leading-tight">
-            {currentMessage}
-          </p>
-        </div>
-        {/* Triangle pointer */}
-        <div className="absolute right-full top-1/2 -translate-y-1/2 -mr-2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[12px] border-r-gray-800" />
-      </motion.div>
-    </motion.div>
+    </>
   )
 }
 
@@ -788,7 +861,7 @@ function App() {
       
       <InteractiveRobot onClick={() => setShowBook(!showBook)} showBook={showBook} />
       
-      <BasketballEasterEgg isVisible={hasNineteen && !showBook} onClick={() => {}} />
+      <UnicornEasterEgg isVisible={hasNineteen && !showBook} />
     </div>
   )
 }
