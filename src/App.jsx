@@ -671,7 +671,23 @@ const PIPO_MESSAGES = [
   "Japon.",
   "Libre 365RUST.",
   "No te puedo dar mas pistas.",
-  "Disfruta de el proceso."
+  "Disfruta de el proceso.",
+  "No me reconoces? Soy pipo.",
+  "La respuesta es esperar.",
+  "Te gusto la portada?.",
+  "Solo una persona esta haciendo todo, alguien que te ama mucho.",
+  "No es algo facil, pero es muy unico.",
+  "Te tengo que decir que solo tengo algunos mensajes programados.",
+  "Cuantas veces me has presionado?.",
+  "Quieres seguir hablando?.",
+  "Soy un unicornio un poco diferente a lo que es pipo pero asume que soy el mismo.",
+  "Cobre vida? Donde estoy?.",
+  "Todo puede ser malo pero nunca entenderas el sufrimiento de que te confundan con una bolsa de basura blanca.",
+  "Cuanto tiempo mas voy a hablar, estoy cansado.",
+  "Solo soy un simple unicornio que habla.",
+  "Tengo hambre.",
+  "Juguemos a algo, Choco, Choco, LA, LA, chocho, chocho, TE, TE, No? okey.",
+  "Que dia esta haciendo hoy?."
 ]
 
 // Images loaded from public folder
