@@ -846,28 +846,90 @@ PIPO
   )
 }
 
-// --- Phases Progress Component (INTERACTIVE) ---
+// --- Phases Progress Component (EXPANDABLE) ---
 const TOTAL_PHASES = 8
-const COMPLETED_PHASES = 4  // Change this number
+const COMPLETED_PHASES = 4
+const PHASE_SUBTITLES = [
+  "Has completado la primera fase del proyecto. Solo faltan 7 mas.",
+  "La segunda fase esta lista. Vamos bien, sigue asi.",
+  "Tercer fase completa. Estas haciendo un gran trabajo.",
+  "Ya casi llegas a la mitad. Continua asi!",
+  "Fase 5: Esta bloqueada. Completed las anteriores primero.",
+  "Fase 6: Esta bloqueada. Completed las anteriores primero.",
+  "Fase 7: Esta bloqueada. Completed las anteriores primero.",
+  "Fase 8: Ultima fase! Ya casi llegas."
+]
 
 function PhasesProgress({ setPhaseMessage }) {
+  const [selectedPhase, setSelectedPhase] = useState(null)
+  const [locked, setLocked] = useState(false)
+
   const handlePhaseClick = (index) => {
     const isCompleted = index < COMPLETED_PHASES
     
     if (isCompleted) {
-      setPhaseMessage?.(`Fase ${index + 1}: test`)
+      setSelectedPhase(index + 1)
+      setLocked(true)
+      setPhaseMessage?.(PHASE_SUBTITLES[index])
     } else {
-      setPhaseMessage?.(`Fase ${index + 1}: No puedes acceder todavia`)
+      setSelectedPhase(index + 1)
+      setLocked(true)
+      setPhaseMessage?.(PHASE_SUBTITLES[index])
     }
   }
+
+  const handleClose = () => {
+    setSelectedPhase(null)
+    setLocked(false)
+    setPhaseMessage?.(null)
+  }
+
+  const showPhase = selectedPhase !== null && locked
   
   return (
-    <div className="fixed left-0 top-0 bottom-0 w-16 md:w-20 z-30 flex flex-col">
-      {/* Full height sidebar */}
-      <div className="flex-1 flex flex-col items-center justify-between py-4 md:py-6 bg-black/60 border-r border-purple-500/30 backdrop-blur-sm px-2">
-        
-        {/* All 8 phases - circles vertically */}
-        <div className="flex-1 flex flex-col items-center justify-center gap-3 md:gap-4">
+    <>
+      {/* Expanded phase view */}
+      {showPhase && (
+        <>
+          {/* Dark overlay */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-black/80"
+            onClick={handleClose}
+          />
+          
+          {/* Phase content */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center"
+            onClick={handleClose}
+          >
+            {/* Big FASE title */}
+            <h1 className="text-7xl md:text-9xl font-black text-purple-400 mb-8" style={{ textShadow: '0 0 50px rgba(139,92,246,0.9)' }}>
+              FASE {selectedPhase}
+            </h1>
+            
+            {/* Subtitle */}
+            <p className="text-purple-300 text-xl md:text-2xl max-w-md text-center px-8 leading-relaxed">
+              {PHASE_SUBTITLES[selectedPhase - 1]}
+            </p>
+            
+            {/* Close hint */}
+            <p className="text-gray-500 text-sm mt-8">Click para cerrar</p>
+          </motion.div>
+        </>
+      )}
+      
+      {/* Sidebar - only show when not expanded */}
+      {!showPhase && (
+        <div className="fixed left-0 top-0 bottom-0 w-16 md:w-20 z-30 flex flex-col">
+          <div className="flex-1 flex flex-col items-center justify-between py-4 md:py-6 bg-black/60 border-r border-purple-500/30 backdrop-blur-sm px-2">
+            
+            <div className="flex-1 flex flex-col items-center justify-center gap-3 md:gap-4">
           {Array.from({ length: TOTAL_PHASES }).map((_, index) => {
             const isCompleted = index < COMPLETED_PHASES
             
@@ -921,7 +983,9 @@ function PhasesProgress({ setPhaseMessage }) {
           <span className="text-gray-500 text-sm md:text-base">/{TOTAL_PHASES}</span>
         </div>
       </div>
-    </div>
+        </div>
+      )}
+    </>
   )
 }
 
