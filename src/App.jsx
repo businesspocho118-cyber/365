@@ -845,63 +845,60 @@ PIPO
   )
 }
 
-// --- Phases Progress Component (FULL HEIGHT BIG) ---
+// --- Phases Progress Component (MEDIUM SIZE) ---
 const TOTAL_PHASES = 8
 const COMPLETED_PHASES = 4  // Change this number
 
 function PhasesProgress() {
   return (
-    <div className="fixed left-0 top-0 bottom-0 w-24 md:w-32 z-30 flex flex-col">
+    <div className="fixed left-0 top-0 bottom-0 w-16 md:w-20 z-30 flex flex-col">
       {/* Full height sidebar */}
-      <div className="flex-1 flex flex-col items-center justify-between py-8 bg-black/70 border-r-2 border-purple-500/40 backdrop-blur-md px-3">
+      <div className="flex-1 flex flex-col items-center justify-between py-4 md:py-6 bg-black/60 border-r border-purple-500/30 backdrop-blur-sm px-2">
         
-        {/* Title - FASE at top */}
-        <div className="text-purple-400 text-xl md:text-2xl font-black tracking-widest -rotate-90 whitespace-nowrap drop-shadow-lg" style={{ textShadow: '0 0 20px rgba(139,92,246,0.8)' }}>
+        {/* Title - FASES at top */}
+        <div className="text-purple-400 text-sm md:text-base font-bold tracking-widest -rotate-90 whitespace-nowrap">
           FASES
         </div>
         
-        {/* All 8 phases - big circles vertically */}
-        <div className="flex-1 flex flex-col items-center justify-center gap-6 md:gap-8">
+        {/* All 8 phases - medium circles vertically */}
+        <div className="flex-1 flex flex-col items-center justify-center gap-3 md:gap-4">
           {Array.from({ length: TOTAL_PHASES }).map((_, index) => {
             const isCompleted = index < COMPLETED_PHASES
-            const isNext = index === COMPLETED_PHASES
             
             return (
               <div key={index} className="relative flex flex-col items-center">
-                {/* Big circle indicator */}
+                {/* Circle indicator */}
                 <motion.div 
-                  className={`w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center border-4 ${
+                  className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center border-2 ${
                     isCompleted 
                       ? 'bg-purple-600 border-purple-500' 
-                      : isNext
-                        ? 'bg-purple-900/50 border-purple-700 animate-pulse'
-                        : 'bg-gray-900 border-gray-700'
+                      : 'bg-gray-800 border-gray-700'
                   }`}
                   style={{ 
-                    boxShadow: isCompleted ? '0 0 20px rgba(139,92,246,0.9), inset 0 0 10px rgba(139,92,246,0.3)' : 'none'
+                    boxShadow: isCompleted ? '0 0 10px rgba(139,92,246,0.8)' : 'none'
                   }}
                   animate={isCompleted ? {
-                    boxShadow: ['0 0 5px rgba(139,92,246,0.5)', '0 0 25px rgba(139,92,246,1)', '0 0 5px rgba(139,92,246,0.5)']
+                    boxShadow: ['0 0 3px rgba(139,92,246,0.4)', '0 0 15px rgba(139,92,246,0.8)', '0 0 3px rgba(139,92,246,0.4)']
                   } : {}}
-                  transition={{ repeat: Infinity, duration: 1.5 }}
+                  transition={{ repeat: Infinity, duration: 2 }}
                 >
                   {/* Checkmark for completed */}
                   {isCompleted && (
-                    <svg className="w-6 h-6 md:w-8 md:h-8 text-white drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                    <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   )}
                   
                   {/* Number for pending */}
                   {!isCompleted && (
-                    <span className="text-gray-500 text-lg md:text-xl font-bold">{index + 1}</span>
+                    <span className="text-gray-500 text-xs md:text-sm font-bold">{index + 1}</span>
                   )}
                 </motion.div>
                 
-                {/* Connector line - big */}
+                {/* Connector line */}
                 {index < TOTAL_PHASES - 1 && (
                   <div 
-                    className={`w-1 h-8 md:h-12 ${isCompleted ? 'bg-purple-600' : 'bg-gray-800'}`}
+                    className={`w-0.5 h-4 md:h-6 ${isCompleted ? 'bg-purple-600' : 'bg-gray-800'}`}
                   />
                 )}
               </div>
@@ -909,10 +906,10 @@ function PhasesProgress() {
           })}
         </div>
         
-        {/* Progress number at bottom - BIG */}
+        {/* Progress number at bottom */}
         <div className="text-center">
-          <span className="text-purple-500 text-4xl md:text-5xl font-black" style={{ textShadow: '0 0 30px rgba(139,92,246,0.9)' }}>{COMPLETED_PHASES}</span>
-          <span className="text-gray-600 text-2xl md:text-3xl">/{TOTAL_PHASES}</span>
+          <span className="text-purple-400 text-2xl md:text-3xl font-bold">{COMPLETED_PHASES}</span>
+          <span className="text-gray-500 text-sm md:text-base">/{TOTAL_PHASES}</span>
         </div>
       </div>
     </div>
