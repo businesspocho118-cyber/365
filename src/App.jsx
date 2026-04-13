@@ -1028,7 +1028,7 @@ function App() {
       {/* Phases Progress */}
       <PhasesProgress setPhaseMessage={setPhaseMessage} />
       
-      {/* Phase message toast */}
+      {/* Phase message toast - shows when clicking phase circles */}
       {phaseMessage && (
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -1037,8 +1037,7 @@ function App() {
           className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-purple-900/90 border border-purple-500 px-6 py-3 rounded-lg backdrop-blur-md"
           onClick={() => setPhaseMessage(null)}
         >
-          <p className="text-white text-lg">{phaseMessage}</p>
-          <p className="text-purple-400 text-xs text-center mt-2">Click para cerrar</p>
+          <p className="text-purple-300 text-lg">Click para cerrar</p>
         </motion.div>
       )}
       
