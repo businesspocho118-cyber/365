@@ -845,88 +845,70 @@ PIPO
   )
 }
 
-// --- Phases Progress Component (Limelight style) ---
+// --- Phases Progress Component (Full height) ---
 const TOTAL_PHASES = 8
 const COMPLETED_PHASES = 4  // Change this number to show progress
 
 function PhasesProgress() {
-  const [activePhase] = useState(COMPLETED_PHASES)
-  const [isReady, setIsReady] = useState(false)
-  const phaseRefs = useRef([])
-  const limelightRef = useRef(null)
-
-  useEffect(() => {
-    if (TOTAL_PHASES === 0) return
-
-    const limelight = limelightRef.current
-    const activeItem = phaseRefs.current[activePhase]
-    
-    if (limelight && activeItem) {
-      const newLeft = activeItem.offsetLeft + activeItem.offsetWidth / 2 - limelight.offsetWidth / 2
-      limelight.style.left = `${newLeft}px`
-
-      if (!isReady) {
-        setTimeout(() => setIsReady(true), 50)
-      }
-    }
-  }, [activePhase])
+  const activePhase = COMPLETED_PHASES
 
   return (
-    <div className="fixed left-4 top-1/2 -translate-y-1/2 z-30">
-      <div className="relative flex flex-col items-center py-3 px-2 rounded-lg bg-black/60 border border-purple-500/30 backdrop-blur-sm">
-        {/* Title */}
-        <div className="text-purple-400/70 text-[10px] uppercase tracking-widest mb-2">
+    <div className="fixed left-0 top-0 bottom-0 w-16 md:w-20 z-30 flex flex-col items-center py-6">
+      {/* Background container */}
+      <div className="flex-1 flex flex-col items-center justify-center gap-4 bg-black/50 border-r border-purple-500/30 backdrop-blur-sm px-2 w-full">
+        
+        {/* Title - FASE */}
+        <div className="text-purple-400 text-xs md:text-sm font-bold uppercase tracking-widest -rotate-90 whitespace-nowrap">
           Fases
         </div>
         
-        {/* Phases dots */}
-        {Array.from({ length: TOTAL_PHASES }).map((_, index) => {
-          const isCompleted = index < activePhase
-          const isActive = index === activePhase
-          
-          return (
-            <div
-              key={index}
-              ref={el => (phaseRefs.current[index] = el)}
-              className="relative z-20 flex items-center justify-center cursor-default"
-            >
-              {/* Dot */}
-              <div 
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  isCompleted 
-                    ? 'bg-purple-500 shadow-[0_0_10px_rgba(139,92,246,0.8)]' 
-                    : 'bg-gray-700 border border-gray-600'
-                } ${isActive ? 'ring-2 ring-purple-400 ring-opacity-50' : ''}`}
-              />
-              
-              {/* Connector line */}
-              {index < TOTAL_PHASES - 1 && (
-                <div 
-                  className={`absolute left-1/2 -translate-x-1/2 top-full w-0.5 h-3 ${
-                    isCompleted ? 'bg-purple-500' : 'bg-gray-700'
-                  }`} 
-                />
-              )}
-            </div>
-          )
-        })}
-        
-        {/* Limelight glow effect */}
-        <div 
-          ref={limelightRef}
-          className={`absolute left-1/2 -translate-x-1/2 w-8 h-4 rounded-full bg-purple-500/30 blur-xl ${
-            isReady ? 'transition-[left] duration-400 ease-in-out' : ''
-          }`}
-          style={{ left: '-999px' }}
-        >
-          <div className="absolute left-[-30%] top-[-5px] w-[160%] h-8 [clip-path:polygon(5%_100%,25%_0,75%_0,95%_100%)] bg-gradient-to-b from-purple-500/40 to-transparent pointer-events-none" />
+        {/* Phases indicators - vertical */}
+        <div className="flex-1 flex flex-col items-center justify-center gap-2">
+          {Array.from({ length: TOTAL_PHASES }).map((_, index) => {
+            const isCompleted = index < activePhase
+            const isActive = index === activePhase - 1
+            
+            return (
+              <div key={index} className="relative flex flex-col items-center">
+                {/* Phase indicator circle */}
+                <motion.div 
+                  className={`w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center ${
+                    isCompleted ? 'bg-purple-600' : 'bg-gray-800 border-2 border-gray-700'
+                  }`}
+                  animate={isCompleted ? {
+                    boxShadow: ['0 0 0 rgba(139,92,246,0)', '0 0 15px rgba(139,92,246,0.8)', '0 0 0 rgba(139,92,246,0)']
+                  } : {}}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                >
+                  {/* Checkmark for completed */}
+                  {isCompleted && (
+                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                  
+                  {/* Number for current/active */}
+                  {!isCompleted && !isActive && (
+                    <span className="text-gray-500 text-xs font-bold">{index + 1}</span>
+                  )}
+                </motion.div>
+                
+                {/* Connector line */}
+                {index < TOTAL_PHASES - 1 && (
+                  <div 
+                    className={`w-0.5 h-6 ${isCompleted ? 'bg-purple-600' : 'bg-gray-800'}`}
+                  />
+                )}
+              </div>
+            )
+          })}
         </div>
-      </div>
-      
-      {/* Progress text */}
-      <div className="text-center mt-2">
-        <span className="text-purple-400 text-lg font-bold">{COMPLETED_PHASES}</span>
-        <span className="text-gray-500 text-sm">/{TOTAL_PHASES}</span>
+        
+        {/* Progress number */}
+        <div className="mt-2">
+          <span className="text-purple-400 text-xl md:text-2xl font-bold">{COMPLETED_PHASES}</span>
+          <span className="text-gray-500 text-sm">/{TOTAL_PHASES}</span>
+        </div>
       </div>
     </div>
   )
