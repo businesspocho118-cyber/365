@@ -1,30 +1,21 @@
 @import "tailwindcss";
 
 @theme {
-  /* Paleta Morada Misteriosa */
   --color-bg-primary: #0a0a0a;
   --color-bg-secondary: #121218;
   --color-bg-card: #1a1a24;
-  
   --color-purple-light: #a855f7;
   --color-purple-default: #8b5cf6;
   --color-purple-dark: #6366f1;
   --color-purple-darker: #4c1d95;
   --color-purple-glow: #c084fc;
-  
   --color-text-primary: #ffffff;
   --color-text-secondary: #e2e8f0;
   --color-text-muted: #94a3b8;
-  
   --font-family-display: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --font-family-mono: ui-monospace, Consolas, monospace;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   font-family: var(--font-family-display);
@@ -38,106 +29,4 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-/* Animación de fondo líquido */
-@keyframes liquid-move {
-  0%, 100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  25% {
-    transform: translate(20px, -20px) rotate(5deg);
-  }
-  50% {
-    transform: translate(0, -40px) rotate(0deg);
-  }
-  75% {
-    transform: translate(-20px, -20px) rotate(-5deg);
-  }
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.animate-liquid {
-  animation: liquid-move 20s ease-in-out infinite;
-}
-
-.animate-pulse-glow {
-  animation: pulse-glow 4s ease-in-out infinite;
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-/* === FLIP COUNTDOWN - NUMEROS LIBRES SIN CAJAS === */
-.flip-countdown-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px 16px;
-}
-
-.flip-unit {
-  position: relative;
-  perspective: 300px;
-}
-
-.flip-card {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  overflow: hidden;
-}
-
-.flipper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform-style: preserve-3d;
-  transform-origin: center center;
-}
-
-.flipper.is-flipping {
-  animation: flip-animation 0.5s ease-in-out forwards;
-}
-
-.flipper__top {
-  transform-origin: bottom center;
-}
-
-.flipper__bottom {
-  transform-origin: top center;
-}
-
-@keyframes flip-animation {
-  0% {
-    transform: rotateX(0deg);
-  }
-  50% {
-    transform: rotateX(-90deg);
-  }
-  100% {
-    transform: rotateX(0deg);
-  }
 }

@@ -1,13 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { motion } from 'framer-motion'
 
-// Fecha objetivo: 19 de octubre de 2026 a las 00:00:00
 const TARGET_DATE = new Date('2026-10-19T00:00:00').getTime()
 
-// Utility para clases condicionales
-const cn = (...inputs) => inputs.filter(Boolean).join(' ')
-
-// --- Flip Unit Component (números LIBRES con animación) ---
+// --- Flip Unit ---
 const FlipUnit = ({ digit }) => {
   const [currentDigit, setCurrentDigit] = useState(digit)
   const [isFlipping, setIsFlipping] = useState(false)
@@ -1040,4 +1036,6 @@ function FloatingTime({ value, label }) {
   )
 }
 
+// Delete: FloatingTime nunca se usa
+// Delete: cn nunca se usa
 export default App
