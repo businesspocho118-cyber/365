@@ -845,6 +845,93 @@ PIPO
   )
 }
 
+// --- Phases Progress Component (Limelight style) ---
+const TOTAL_PHASES = 8
+const COMPLETED_PHASES = 4  // Change this number to show progress
+
+function PhasesProgress() {
+  const [activePhase] = useState(COMPLETED_PHASES)
+  const [isReady, setIsReady] = useState(false)
+  const phaseRefs = useRef([])
+  const limelightRef = useRef(null)
+
+  useEffect(() => {
+    if (TOTAL_PHASES === 0) return
+
+    const limelight = limelightRef.current
+    const activeItem = phaseRefs.current[activePhase]
+    
+    if (limelight && activeItem) {
+      const newLeft = activeItem.offsetLeft + activeItem.offsetWidth / 2 - limelight.offsetWidth / 2
+      limelight.style.left = `${newLeft}px`
+
+      if (!isReady) {
+        setTimeout(() => setIsReady(true), 50)
+      }
+    }
+  }, [activePhase])
+
+  return (
+    <div className="fixed left-4 top-1/2 -translate-y-1/2 z-30">
+      <div className="relative flex flex-col items-center py-3 px-2 rounded-lg bg-black/60 border border-purple-500/30 backdrop-blur-sm">
+        {/* Title */}
+        <div className="text-purple-400/70 text-[10px] uppercase tracking-widest mb-2">
+          Fases
+        </div>
+        
+        {/* Phases dots */}
+        {Array.from({ length: TOTAL_PHASES }).map((_, index) => {
+          const isCompleted = index < activePhase
+          const isActive = index === activePhase
+          
+          return (
+            <div
+              key={index}
+              ref={el => (phaseRefs.current[index] = el)}
+              className="relative z-20 flex items-center justify-center cursor-default"
+            >
+              {/* Dot */}
+              <div 
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  isCompleted 
+                    ? 'bg-purple-500 shadow-[0_0_10px_rgba(139,92,246,0.8)]' 
+                    : 'bg-gray-700 border border-gray-600'
+                } ${isActive ? 'ring-2 ring-purple-400 ring-opacity-50' : ''}`}
+              />
+              
+              {/* Connector line */}
+              {index < TOTAL_PHASES - 1 && (
+                <div 
+                  className={`absolute left-1/2 -translate-x-1/2 top-full w-0.5 h-3 ${
+                    isCompleted ? 'bg-purple-500' : 'bg-gray-700'
+                  }`} 
+                />
+              )}
+            </div>
+          )
+        })}
+        
+        {/* Limelight glow effect */}
+        <div 
+          ref={limelightRef}
+          className={`absolute left-1/2 -translate-x-1/2 w-8 h-4 rounded-full bg-purple-500/30 blur-xl ${
+            isReady ? 'transition-[left] duration-400 ease-in-out' : ''
+          }`}
+          style={{ left: '-999px' }}
+        >
+          <div className="absolute left-[-30%] top-[-5px] w-[160%] h-8 [clip-path:polygon(5%_100%,25%_0,75%_0,95%_100%)] bg-gradient-to-b from-purple-500/40 to-transparent pointer-events-none" />
+        </div>
+      </div>
+      
+      {/* Progress text */}
+      <div className="text-center mt-2">
+        <span className="text-purple-400 text-lg font-bold">{COMPLETED_PHASES}</span>
+        <span className="text-gray-500 text-sm">/{TOTAL_PHASES}</span>
+      </div>
+    </div>
+  )
+}
+
 function App() {
   const [isExpired, setIsExpired] = useState(false)
   const [showBook, setShowBook] = useState(false)
@@ -885,6 +972,9 @@ function App() {
 
   return (
     <div className="min-h-screen w-screen bg-[#0a0a0a] relative overflow-hidden">
+      {/* Phases Progress */}
+      <PhasesProgress />
+      
       {/* Shader Background - Grid + Plasma */}
       <ShaderBackground />
       
