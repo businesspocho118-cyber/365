@@ -852,12 +852,14 @@ const COMPLETED_PHASES = 4
 const PHASE_SUBTITLES = [
   "Has completado la primera fase del proyecto. Solo faltan 7 mas.",
   "La segunda fase esta lista. Vamos bien, sigue asi.",
-  "Tercer fase completa. Estas haciendo un gran trabajo.",
-  "Ya casi llegas a la mitad. Continua asi!",
-  "Fase 5: Esta bloqueada. Completed las anteriores primero.",
-  "Fase 6: Esta bloqueada. Completed las anteriores primero.",
-  "Fase 7: Esta bloqueada. Completed las anteriores primero.",
-  "Fase 8: Ultima fase! Ya casi llegas."
+  "En esta fase tendras que resolver un misterio orientado a la tecnologia aunque la respuesta no tiene que ver nada con la tecnologia disfrutando will knowing in like es la primera fase de el proyecto te adentraras un poco mas en el ambito tecnologico y asi podras resolverlo esta primera fase no resulta o quiere ser dificil si no que quiere hacerte saber la mecanica de las fases y como seguiran estas",
+  "Segunda fase: Esta en proceso. Logo estara lista.",
+  "Tercera fase: Esta en proceso. Logo estara lista.",
+  "Cuarta fase: Esta en proceso. Logo estara lista.",
+  "Esta fase esta en proceso de creacion debes ser paciente para decifrar de que tratara una vez la fase este realizada se reflejara aqui dandote un poco de pistas de lo que sera",
+  "Esta fase esta en proceso de creacion debes ser paciente para decifrar de que tratara una vez la fase este realizada se reflejara aqui dandote un poco de pistas de lo que sera",
+  "Esta fase esta en proceso de creacion debes ser paciente para decifrar de que tratara una vez la fase este realizada se reflejara aqui dandote un poco de pistas de lo que sera",
+  "Esta fase esta en proceso de creacion debes ser paciente para decifrar de que tratara una vez la fase este realizada se reflejara aqui dandote un poco de pistas de lo que sera"
 ]
 
 function PhasesProgress({ setPhaseMessage }) {
@@ -909,12 +911,17 @@ function PhasesProgress({ setPhaseMessage }) {
             onClick={handleClose}
           >
             {/* Big FASE title */}
-            <h1 className="text-7xl md:text-9xl font-black text-purple-400 mb-8" style={{ textShadow: '0 0 50px rgba(139,92,246,0.9)' }}>
+            <h1 className="text-7xl md:text-9xl font-black text-purple-400 mb-4" style={{ textShadow: '0 0 50px rgba(139,92,246,0.9)' }}>
               FASE {selectedPhase}
             </h1>
             
+            {/* Subtitle for each phase */}
+            <p className="text-purple-300 text-lg md:text-xl max-w-lg text-center px-8 leading-relaxed mb-4">
+              {PHASE_SUBTITLES[selectedPhase - 1]}
+            </p>
+            
             {/* Close hint only */}
-            <p className="text-gray-400 text-lg mt-8">Click para cerrar</p>
+            <p className="text-gray-400 text-lg mt-4">Click para cerrar</p>
           </motion.div>
         </>
       )}
