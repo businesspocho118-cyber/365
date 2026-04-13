@@ -845,7 +845,7 @@ PIPO
   )
 }
 
-// --- Phases Progress Component (MEDIUM SIZE) ---
+// --- Phases Progress Component (NO TEXT) ---
 const TOTAL_PHASES = 8
 const COMPLETED_PHASES = 4  // Change this number
 
@@ -855,12 +855,7 @@ function PhasesProgress() {
       {/* Full height sidebar */}
       <div className="flex-1 flex flex-col items-center justify-between py-4 md:py-6 bg-black/60 border-r border-purple-500/30 backdrop-blur-sm px-2">
         
-        {/* Title - FASES at top */}
-        <div className="text-purple-400 text-sm md:text-base font-bold tracking-widest -rotate-90 whitespace-nowrap">
-          FASES
-        </div>
-        
-        {/* All 8 phases - medium circles vertically */}
+        {/* All 8 phases - circles vertically */}
         <div className="flex-1 flex flex-col items-center justify-center gap-3 md:gap-4">
           {Array.from({ length: TOTAL_PHASES }).map((_, index) => {
             const isCompleted = index < COMPLETED_PHASES
@@ -904,12 +899,6 @@ function PhasesProgress() {
               </div>
             )
           })}
-        </div>
-        
-        {/* Progress number at bottom */}
-        <div className="text-center">
-          <span className="text-purple-400 text-2xl md:text-3xl font-bold">{COMPLETED_PHASES}</span>
-          <span className="text-gray-500 text-sm md:text-base">/{TOTAL_PHASES}</span>
         </div>
       </div>
     </div>
