@@ -913,13 +913,8 @@ function PhasesProgress({ setPhaseMessage }) {
               FASE {selectedPhase}
             </h1>
             
-            {/* Subtitle */}
-            <p className="text-purple-300 text-xl md:text-2xl max-w-md text-center px-8 leading-relaxed">
-              {PHASE_SUBTITLES[selectedPhase - 1]}
-            </p>
-            
-            {/* Close hint */}
-            <p className="text-gray-500 text-sm mt-8">Click para cerrar</p>
+            {/* Close hint only */}
+            <p className="text-gray-400 text-lg mt-8">Click para cerrar</p>
           </motion.div>
         </>
       )}
