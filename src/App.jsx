@@ -845,11 +845,21 @@ PIPO
   )
 }
 
-// --- Phases Progress Component (NO TEXT) ---
+// --- Phases Progress Component (INTERACTIVE) ---
 const TOTAL_PHASES = 8
 const COMPLETED_PHASES = 4  // Change this number
 
-function PhasesProgress() {
+function PhasesProgress({ setPhaseMessage }) {
+  const handlePhaseClick = (index) => {
+    const isCompleted = index < COMPLETED_PHASES
+    
+    if (isCompleted) {
+      setPhaseMessage?.(`Fase ${index + 1}: test`)
+    } else {
+      setPhaseMessage?.(`Fase ${index + 1}: No puedes acceder todavia`)
+    }
+  }
+  
   return (
     <div className="fixed left-0 top-0 bottom-0 w-16 md:w-20 z-30 flex flex-col">
       {/* Full height sidebar */}
@@ -862,11 +872,11 @@ function PhasesProgress() {
             
             return (
               <div key={index} className="relative flex flex-col items-center">
-                {/* Circle indicator */}
+                {/* Circle indicator - clickable */}
                 <motion.div 
-                  className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center border-2 ${
+                  className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center border-2 cursor-pointer ${
                     isCompleted 
-                      ? 'bg-purple-600 border-purple-500' 
+                      ? 'bg-purple-600 border-purple-500 hover:scale-125' 
                       : 'bg-gray-800 border-gray-700'
                   }`}
                   style={{ 
@@ -876,6 +886,9 @@ function PhasesProgress() {
                     boxShadow: ['0 0 3px rgba(139,92,246,0.4)', '0 0 15px rgba(139,92,246,0.8)', '0 0 3px rgba(139,92,246,0.4)']
                   } : {}}
                   transition={{ repeat: Infinity, duration: 2 }}
+                  whileHover={isCompleted ? { scale: 1.25 } : { scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handlePhaseClick(index)}
                 >
                   {/* Checkmark for completed */}
                   {isCompleted && (
@@ -900,6 +913,12 @@ function PhasesProgress() {
             )
           })}
         </div>
+        
+        {/* Progress number at bottom */}
+        <div className="text-center">
+          <span className="text-purple-400 text-2xl md:text-3xl font-bold">{COMPLETED_PHASES}</span>
+          <span className="text-gray-500 text-sm md:text-base">/{TOTAL_PHASES}</span>
+        </div>
       </div>
     </div>
   )
@@ -909,6 +928,7 @@ function App() {
   const [isExpired, setIsExpired] = useState(false)
   const [showBook, setShowBook] = useState(false)
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+  const [phaseMessage, setPhaseMessage] = useState(null)
   
   // Detectar si hay un 19 en cualquier posición
   const hasNineteen = useMemo(() => {
@@ -946,7 +966,21 @@ function App() {
   return (
     <div className="min-h-screen w-screen bg-[#0a0a0a] relative overflow-hidden">
       {/* Phases Progress */}
-      <PhasesProgress />
+      <PhasesProgress setPhaseMessage={setPhaseMessage} />
+      
+      {/* Phase message toast */}
+      {phaseMessage && (
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 50 }}
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-purple-900/90 border border-purple-500 px-6 py-3 rounded-lg backdrop-blur-md"
+          onClick={() => setPhaseMessage(null)}
+        >
+          <p className="text-white text-lg">{phaseMessage}</p>
+          <p className="text-purple-400 text-xs text-center mt-2">Click para cerrar</p>
+        </motion.div>
+      )}
       
       {/* Shader Background - Grid + Plasma */}
       <ShaderBackground />
