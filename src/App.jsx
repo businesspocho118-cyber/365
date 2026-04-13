@@ -850,16 +850,22 @@ PIPO
 const TOTAL_PHASES = 8
 const COMPLETED_PHASES = 4
 const PHASE_SUBTITLES = [
-  "Has completado la primera fase del proyecto. Solo faltan 7 mas.",
-  "La segunda fase esta lista. Vamos bien, sigue asi.",
-  "En esta fase tendras que resolver un misterio orientado a la tecnologia aunque la respuesta no tiene que ver nada con la tecnologia disfrutando will knowing in like es la primera fase de el proyecto te adentraras un poco mas en el ambito tecnologico y asi podras resolverlo esta primera fase no resulta o quiere ser dificil si no que quiere hacerte saber la mecanica de las fases y como seguiran estas",
-  "Segunda fase: Esta en proceso. Logo estara lista.",
-  "Tercera fase: Esta en proceso. Logo estara lista.",
-  "Cuarta fase: Esta en proceso. Logo estara lista.",
-  "Esta fase esta en proceso de creacion debes ser paciente para decifrar de que tratara una vez la fase este realizada se reflejara aqui dandote un poco de pistas de lo que sera",
-  "Esta fase esta en proceso de creacion debes ser paciente para decifrar de que tratara una vez la fase este realizada se reflejara aqui dandote un poco de pistas de lo que sera",
-  "Esta fase esta en proceso de creacion debes ser paciente para decifrar de que tratara una vez la fase este realizada se reflejara aqui dandote un poco de pistas de lo que sera",
-  "Esta fase esta en proceso de creacion debes ser paciente para decifrar de que tratara una vez la fase este realizada se reflejara aqui dandote un poco de pistas de lo que sera"
+  // Fase 1 (index 0)
+  "En esta fase tendras que resolver un misterio orientado a la tecnologia aunque la respuesta no tiene que ver nada con la tecnologia. Disfrutaras sabiendo en como es la primera fase de el proyecto. Te adentraras un poco mas en el ambito tecnologico y asi podras resolverlo. Esta primera fase no resulta o quiere ser dificil, si no que quiere hacerte saber la mecanica de las fases y como seguiran estas.",
+  // Fase 2 (index 1)
+  "Segunda fase: Esta en proceso de creacion. Pronto estara lista para ti.",
+  // Fase 3 (index 2)
+  "Tercera fase: Esta en proceso de creacion. Pronto sabras de que trata.",
+  // Fase 4 (index 3)
+  "Cuarta fase: Esta en proceso. Estas cerca de la mitad!",
+  // Fase 5 (index 4)
+  "Esta fase aun no esta lista. Debes ser paciente para ver de que tratara.",
+  // Fase 6 (index 5)
+  "Esta fase esta en progreso. Pronto podras ver su contenido.",
+  // Fase 7 (index 6)
+  "Casi llegas a la ultima fase. Estas haciendo un gran trabajo.",
+  // Fase 8 (index 7)
+  "Fase final! Esta fase sera muy especial cuando este lista."
 ]
 
 function PhasesProgress({ setPhaseMessage }) {
