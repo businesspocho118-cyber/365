@@ -855,7 +855,7 @@ const PHASE_SUBTITLES = [
   // Fase 2 (index 1)
   "En esta fase te adentras en el mundo de la magia un poco para que experimentes lo bonito que es. Espero que entiendas algunos conceptos y de forma que tambien te diviertas resolviendo el acertijo. No es dificil pero hay que ir poco a poco.",
   // Fase 3 (index 2)
-  "En esta faseiremos al mundo de la musica un poco para que veas realmente que no todo va a ser igual y habran distintos temas a los que tratar. De igual manera no sera dificil. Mi consejo esque interpretes bien cada detalle y que preguntes si tienes dudas. A veces podre ayudarte en algo.",
+  "En esta fase iremos al mundo de la musica un poco para que veas realmente que no todo va a ser igual y habran distintos temas a los que tratar. De igual manera no sera dificil. Mi consejo esque interpretes bien cada detalle y que preguntes si tienes dudas. A veces podre ayudarte en algo.",
   // Fase 4 (index 3)
   "Esta fase es mi favorita. Se va a tratar sobre videojuegos. Se que tu no te centras mucho en eso pero al menos intentare que te gusten un poco mas. Tengo que decir que esta es la mitad de las fases totales y que por eso tambien sera importante y diferente a las demas.",
   // Fase 5 (index 4)
