@@ -691,11 +691,15 @@ const PIPO_SPEAKING = '/images/unicorn-speaking.png'  // boca abierta
 const PIPO_IDLE = '/images/unicorn-idle.png'    // boca cerrada
 
 function UnicornEasterEgg({ isVisible }) {
+  const [pipoLocked, setPipoLocked] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const [showDialogue, setShowDialogue] = useState(false)
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
   const [displayedText, setDisplayedText] = useState('')
   const [isTyping, setIsTyping] = useState(false)
+
+  // Show if visible OR if locked (even if 19 is gone)
+  const shouldShow = isVisible || pipoLocked
   
   const currentMessage = PIPO_MESSAGES[currentMessageIndex]
   
@@ -729,29 +733,30 @@ function UnicornEasterEgg({ isVisible }) {
     setCurrentMessageIndex(nextIndex)
   }
   
-  const handleExpand = () => {
+const handleExpand = () => {
     if (isExpanded) {
-      // Close dialogue
+      // Close and unlock (only close pipo)
       setShowDialogue(false)
       setDisplayedText('')
-      setTimeout(() => setIsExpanded(false), 300)
+      setTimeout(() => {
+        setIsExpanded(false)
+        setPipoLocked(false)
+      }, 300)
     } else {
-      // Expand to center
+      // Expand to center - lock pipo so it stays
+      setPipoLocked(true)
       setIsExpanded(true)
       setShowDialogue(true)
-      // Pick random message on open
       nextMessage()
     }
   }
-  
-  // Handle click on unicorn (for next message)
-  const handleClick = () => {
-    if (isExpanded && showDialogue) {
-      nextMessage()
-    }
+
+  // Click on expanded pipo to get next message
+  const handlePipoClick = () => {
+    nextMessage()
   }
-  
-  if (!isVisible) return null
+
+  if (!shouldShow) return null
   
   return (
     <>
@@ -777,7 +782,7 @@ function UnicornEasterEgg({ isVisible }) {
       >
         <motion.div
           className="cursor-pointer"
-          onClick={isExpanded ? handleClick : handleExpand}
+          onClick={isExpanded ? handlePipoClick : handleExpand}
           animate={isExpanded ? { scale: [1, 1.02, 1] } : { y: [0, -3, 0] }}
           transition={{ repeat: isExpanded ? Infinity : 0, duration: 2 }}
         >
