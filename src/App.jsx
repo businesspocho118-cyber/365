@@ -853,7 +853,7 @@ const PHASE_SUBTITLES = [
   // Fase 1 (index 0)
   "En esta fase tendras que resolver un misterio orientado a la tecnologia aunque la respuesta no tiene que ver nada con la tecnologia. Disfrutaras sabiendo en como es la primera fase de el proyecto. Te adentraras un poco mas en el ambito tecnologico y asi podras resolverlo. Esta primera fase no resulta o quiere ser dificil, si no que quiere hacerte saber la mecanica de las fases y como seguiran estas.",
   // Fase 2 (index 1)
-  "Segunda fase: Esta en proceso de creacion. Pronto estara lista para ti.",
+  "En esta fase te adentras en el mundo de la magia un poco para que experimentes lo bonito que es. Espero que entiendas algunos conceptos y de forma que tambien te diviertas resolviendo el acertijo. No es dificil pero hay que ir poco a poco.",
   // Fase 3 (index 2)
   "Tercera fase: Esta en proceso de creacion. Pronto sabras de que trata.",
   // Fase 4 (index 3)
@@ -917,17 +917,37 @@ function PhasesProgress({ setPhaseMessage }) {
             onClick={handleClose}
           >
             {/* Big FASE title */}
-            <h1 className="text-7xl md:text-9xl font-black text-purple-400 mb-4" style={{ textShadow: '0 0 50px rgba(139,92,246,0.9)' }}>
+            <motion.h1 
+              className="text-7xl md:text-9xl font-black text-purple-400 mb-6"
+              style={{ textShadow: '0 0 50px rgba(139,92,246,0.9)', fontFamily: '"Bebas Neue", sans-serif' }}
+              initial={{ opacity: 0, y: -30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
               FASE {selectedPhase}
-            </h1>
+            </motion.h1>
             
-            {/* Subtitle for each phase */}
-            <p className="text-purple-300 text-lg md:text-xl max-w-lg text-center px-8 leading-relaxed mb-4">
-              {PHASE_SUBTITLES[selectedPhase - 1]}
-            </p>
+            {/* Subtitle in black box */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-black/80 border border-purple-500/50 rounded-xl px-8 py-6 max-w-xl"
+            >
+              <p className="text-purple-200 text-lg md:text-xl text-center leading-relaxed" style={{ fontFamily: '"Inter", sans-serif' }}>
+                {PHASE_SUBTITLES[selectedPhase - 1]}
+              </p>
+            </motion.div>
             
             {/* Close hint only */}
-            <p className="text-gray-400 text-lg mt-4">Click para cerrar</p>
+            <motion.p 
+              className="text-gray-400 text-lg mt-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              Click para cerrar
+            </motion.p>
           </motion.div>
         </>
       )}
