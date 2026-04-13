@@ -1,13 +1,9 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { motion } from 'framer-motion'
 
-// Fecha objetivo: 19 de octubre de 2026 a las 00:00:00
 const TARGET_DATE = new Date('2026-10-19T00:00:00').getTime()
 
-// Utility para clases condicionales
-const cn = (...inputs) => inputs.filter(Boolean).join(' ')
-
-// --- Flip Unit Component (números LIBRES con animación) ---
+// --- Flip Unit ---
 const FlipUnit = ({ digit }) => {
   const [currentDigit, setCurrentDigit] = useState(digit)
   const [isFlipping, setIsFlipping] = useState(false)
@@ -51,7 +47,7 @@ const FlipUnit = ({ digit }) => {
 }
 
 // --- Flip Countdown Principal ---
-const FlipCountdown = ({ targetDate }) => {
+const FlipCountdown = ({ targetDate, onTimeUpdate }) => {
   const [timeLeft, setTimeLeft] = useState(() => {
     const now = new Date().getTime()
     const difference = targetDate - now
@@ -77,21 +73,24 @@ const FlipCountdown = ({ targetDate }) => {
         return
       }
       
-      setTimeLeft({
+      const newTime = {
         days: Math.floor(difference / (1000 * 60 * 60 * 24)),
         hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
         minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
         seconds: Math.floor((difference % (1000 * 60)) / 1000)
-      })
+      }
+      setTimeLeft(newTime)
+      onTimeUpdate?.(newTime)
     }, 1000)
     
     return () => clearInterval(timer)
-  }, [targetDate])
+  }, [targetDate, onTimeUpdate])
 
   // Pad digits - days can be 3 digits, hours/minutes/seconds are 2 digits
   const paddedDays = String(timeLeft.days).padStart(3, '0')
   const paddedHours = String(timeLeft.hours).padStart(2, '0')
   const paddedMinutes = String(timeLeft.minutes).padStart(2, '0')
+  const paddedSeconds = String(timeLeft.seconds || 0).padStart(2, '0')
 
   return (
     <div className="flip-countdown-wrapper flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
@@ -127,6 +126,18 @@ const FlipCountdown = ({ targetDate }) => {
           ))}
         </div>
         <span className="text-purple-400/70 text-lg md:text-2xl mt-3 uppercase tracking-[0.5em] font-semibold">MINUTES</span>
+      </div>
+      
+      <span className="text-purple-400/50 text-5xl md:text-7xl font-light -mt-10">:</span>
+      
+      {/* SECONDS */}
+      <div className="flex flex-col items-center">
+        <div className="flex items-baseline">
+          {paddedSeconds.split('').map((digit, index) => (
+            <FlipUnit key={`seconds-${index}`} digit={digit} />
+          ))}
+        </div>
+        <span className="text-purple-400/70 text-lg md:text-2xl mt-3 uppercase tracking-[0.5em] font-semibold">SECONDS</span>
       </div>
     </div>
   )
@@ -621,11 +632,408 @@ function Book({ characterImage }) {
   )
 }
 
+// --- Pipo Easter Egg (Undertale/Pokemon style) ---
+const PIPO_MESSAGES = [
+  "Cuanto tiempo pasarias haciendo un regalo?.",
+  "Mucho o poco tiempo? Depende desde donde lo mires.",
+  "Paciencia…………",
+  "La punta de el iceberg.",
+  "1996 sera importante luego.",
+  "Te gusta jugar a ser detective?.",
+  "Cuanto tiempo falta?.",
+  "Muchos secretos que descubrir.",
+  "1……..9",
+  "8 fases.",
+  "Hecho desde 0 y solo con un objetivo.",
+  "Cada dia haciendo algo mas.",
+  "Un regalo? Nah, Una experiencia.",
+  "El proyecto mas grande de mi vida.",
+  "Aun falta.",
+  "No seas impaciente.",
+  "Cuantos mensajes crees que he echo?.",
+  "Siempre un paso por delante.",
+  "……………",
+  "Recomiendo que le tomes captura a el cronometro.",
+  "Consejo: Nunca pienses que descubriste todo.",
+  "Nombre futbolista, Codigo, Nombre artista, Pokemon favorito.",
+  "Se te va a hacer mas facil si empiezas desde ahora.",
+  "Confio en que lo superaras.",
+  "365",
+  "Sera todo esto un sueno?.",
+  "34536",
+  "No quieras entender todo desde el principio, disfruta de la incertidumbre.",
+  "Cada dia es uno menos. O uno mas?.",
+  "Muchas preguntas pocas respuestas.",
+  "Japon.",
+  "Libre 365RUST.",
+  "No te puedo dar mas pistas.",
+  "Disfruta de el proceso.",
+  "No me reconoces? Soy pipo.",
+  "La respuesta es esperar.",
+  "Te gusto la portada?.",
+  "Solo una persona esta haciendo todo, alguien que te ama mucho.",
+  "No es algo facil, pero es muy unico.",
+  "Te tengo que decir que solo tengo algunos mensajes programados.",
+  "Cuantas veces me has presionado?.",
+  "Quieres seguir hablando?.",
+  "Soy un unicornio un poco diferente a lo que es pipo pero asume que soy el mismo.",
+  "Cobre vida? Donde estoy?.",
+  "Todo puede ser malo pero nunca entenderas el sufrimiento de que te confundan con una bolsa de basura blanca.",
+  "Cuanto tiempo mas voy a hablar, estoy cansado.",
+  "Solo soy un simple unicornio que habla.",
+  "Tengo hambre.",
+  "Juguemos a algo, Choco, Choco, LA, LA, chocho, chocho, TE, TE, No? okey.",
+  "Que dia esta haciendo hoy?."
+]
+
+// Images loaded from public folder
+const PIPO_SPEAKING = '/images/unicorn-speaking.png'  // boca abierta
+const PIPO_IDLE = '/images/unicorn-idle.png'    // boca cerrada
+
+function UnicornEasterEgg({ isVisible }) {
+  const [pipoLocked, setPipoLocked] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [showDialogue, setShowDialogue] = useState(false)
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
+  const [displayedText, setDisplayedText] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
+
+  // Show if visible OR if locked (even if 19 is gone)
+  const shouldShow = isVisible || pipoLocked
+  
+  const currentMessage = PIPO_MESSAGES[currentMessageIndex]
+  
+  // Typewriter effect
+  useEffect(() => {
+    if (!showDialogue) {
+      setDisplayedText('')
+      return
+    }
+    
+    setDisplayedText('')
+    setIsTyping(true)
+    let index = 0
+    
+    const typeInterval = setInterval(() => {
+      if (index < currentMessage.length) {
+        setDisplayedText(currentMessage.slice(0, index + 1))
+        index++
+      } else {
+        setIsTyping(false)
+        clearInterval(typeInterval)
+      }
+    }, 50)
+    
+    return () => clearInterval(typeInterval)
+  }, [currentMessageIndex, showDialogue])
+  
+  // Cycle to next random message
+  const nextMessage = () => {
+    const nextIndex = Math.floor(Math.random() * PIPO_MESSAGES.length)
+    setCurrentMessageIndex(nextIndex)
+  }
+  
+const handleExpand = () => {
+    if (isExpanded) {
+      // Close and unlock (only close pipo)
+      setShowDialogue(false)
+      setDisplayedText('')
+      setTimeout(() => {
+        setIsExpanded(false)
+        setPipoLocked(false)
+      }, 300)
+    } else {
+      // Expand to center - lock pipo so it stays
+      setPipoLocked(true)
+      setIsExpanded(true)
+      setShowDialogue(true)
+      nextMessage()
+    }
+  }
+
+  // Click on expanded pipo to get next message
+  const handlePipoClick = () => {
+    nextMessage()
+  }
+
+  if (!shouldShow) return null
+  
+  return (
+    <>
+      {/* Dark overlay when expanded (70%) */}
+      {isExpanded && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-40 bg-black/70"
+          onClick={() => setIsExpanded(false)}
+        />
+      )}
+      
+      {/* Unicorn container */}
+      <motion.div
+        className={`fixed z-50 ${isExpanded ? 'inset-0 flex items-center justify-center' : 'top-4 right-4'}`}
+        initial={false}
+        animate={{
+          scale: isExpanded ? 1 : 0.5
+        }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      >
+        <motion.div
+          className="cursor-pointer"
+          onClick={isExpanded ? handlePipoClick : handleExpand}
+          animate={isExpanded ? { scale: [1, 1.02, 1] } : { y: [0, -3, 0] }}
+          transition={{ repeat: isExpanded ? Infinity : 0, duration: 2 }}
+        >
+          {/* Unicorn image - alternating between speaking and idle */}
+          <img 
+            src={showDialogue && isExpanded ? PIPO_SPEAKING : PIPO_IDLE}
+            alt="Unicornio Mágico"
+            className={`${isExpanded ? 'w-48 md:w-64' : 'w-16 md:w-20'} object-contain`}
+            style={{ filter: 'drop-shadow(0 0 25px rgba(139, 92, 246, 0.8))' }}
+          />
+        </motion.div>
+        
+        {/* Dialogue Box (when expanded) */}
+        {isExpanded && showDialogue && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute bottom-8 md:bottom-16 left-1/2 -translate-x-1/2 w-[90%] md:w-[600px]"
+          >
+            {/* Dialogue box */}
+            <div className="bg-black/95 border-4 border-purple-500 rounded-lg p-4 relative shadow-2xl">
+              {/* Character name */}
+              <div className="absolute -top-5 left-4 bg-purple-600 text-white text-xs md:text-sm px-4 py-1 rounded font-bold tracking-wider">
+PIPO
+              </div>
+              
+              {/* Message text with typewriter */}
+              <p className="text-white text-lg md:text-xl mt-3 font-mono min-h-[3rem] leading-relaxed">
+                {displayedText}
+                {isTyping && <span className="animate-pulse text-purple-400">▊</span>}
+              </p>
+              
+              {/* Click for next message hint */}
+              <div className="text-purple-400/70 text-xs mt-3 text-right">
+                CLICK EN PIPO PARA OTRO MENSAJE
+              </div>
+              
+              {/* X button to close */}
+              <button
+                onClick={handleExpand}
+                className="absolute -top-4 -right-4 w-10 h-10 bg-red-600 hover:bg-red-500 rounded-full flex items-center justify-center text-white font-bold text-xl border-2 border-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+            
+            {/* Continue indicator */}
+            <div className="flex justify-end mt-2 pr-2">
+              <motion.span
+                animate={{ opacity: [0, 1, 0], y: [0, 3, 0] }}
+                transition={{ repeat: Infinity, duration: 0.8 }}
+                className="text-purple-400 text-2xl"
+              >
+                ▼
+              </motion.span>
+            </div>
+          </motion.div>
+        )}
+      </motion.div>
+    </>
+  )
+}
+
+// --- Phases Progress Component (EXPANDABLE) ---
+const TOTAL_PHASES = 8
+const COMPLETED_PHASES = 4
+const PHASE_SUBTITLES = [
+  // Fase 1 (index 0)
+  "En esta fase tendras que resolver un misterio orientado a la tecnologia aunque la respuesta no tiene que ver nada con la tecnologia. Disfrutaras sabiendo en como es la primera fase de el proyecto. Te adentraras un poco mas en el ambito tecnologico y asi podras resolverlo. Esta primera fase no resulta o quiere ser dificil, si no que quiere hacerte saber la mecanica de las fases y como seguiran estas.",
+  // Fase 2 (index 1)
+  "En esta fase te adentras en el mundo de la magia un poco para que experimentes lo bonito que es. Espero que entiendas algunos conceptos y de forma que tambien te diviertas resolviendo el acertijo. No es dificil pero hay que ir poco a poco.",
+  // Fase 3 (index 2)
+  "En esta fase iremos al mundo de la musica un poco para que veas realmente que no todo va a ser igual y habran distintos temas a los que tratar. De igual manera no sera dificil. Mi consejo esque interpretes bien cada detalle y que preguntes si tienes dudas. A veces podre ayudarte en algo.",
+  // Fase 4 (index 3)
+  "Esta fase es mi favorita. Se va a tratar sobre videojuegos. Se que tu no te centras mucho en eso pero al menos intentare que te gusten un poco mas. Tengo que decir que esta es la mitad de las fases totales y que por eso tambien sera importante y diferente a las demas.",
+  // Fase 5 (index 4)
+  "Esta fase aun no esta lista. Debes ser paciente para ver de que tratara.",
+  // Fase 6 (index 5)
+  "Esta fase esta en progreso. Pronto podras ver su contenido.",
+  // Fase 7 (index 6)
+  "Casi llegas a la ultima fase. Estas haciendo un gran trabajo.",
+  // Fase 8 (index 7)
+  "Fase final! Esta fase sera muy especial cuando este lista."
+]
+
+function PhasesProgress({ setPhaseMessage }) {
+  const [selectedPhase, setSelectedPhase] = useState(null)
+  const [locked, setLocked] = useState(false)
+
+  const handlePhaseClick = (index) => {
+    const isCompleted = index < COMPLETED_PHASES
+    
+    if (isCompleted) {
+      setSelectedPhase(index + 1)
+      setLocked(true)
+      setPhaseMessage?.(PHASE_SUBTITLES[index])
+    } else {
+      setSelectedPhase(index + 1)
+      setLocked(true)
+      setPhaseMessage?.(PHASE_SUBTITLES[index])
+    }
+  }
+
+  const handleClose = () => {
+    setSelectedPhase(null)
+    setLocked(false)
+    setPhaseMessage?.(null)
+  }
+
+  const showPhase = selectedPhase !== null && locked
+  
+  return (
+    <>
+      {/* Expanded phase view */}
+      {showPhase && (
+        <>
+          {/* Dark overlay */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-black/80"
+            onClick={handleClose}
+          />
+          
+          {/* Phase content */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center"
+            onClick={handleClose}
+          >
+            {/* Big FASE title */}
+            <motion.h1 
+              className="text-7xl md:text-9xl font-black text-purple-400 mb-6"
+              style={{ textShadow: '0 0 50px rgba(139,92,246,0.9)', fontFamily: '"Bebas Neue", sans-serif' }}
+              initial={{ opacity: 0, y: -30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              FASE {selectedPhase}
+            </motion.h1>
+            
+            {/* Subtitle in black box */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-black/80 border border-purple-500/50 rounded-xl px-8 py-6 max-w-xl"
+            >
+              <p className="text-purple-200 text-lg md:text-xl text-center leading-relaxed" style={{ fontFamily: '"Inter", sans-serif' }}>
+                {PHASE_SUBTITLES[selectedPhase - 1]}
+              </p>
+            </motion.div>
+            
+            {/* Close hint only */}
+            <motion.p 
+              className="text-gray-400 text-lg mt-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              Click para cerrar
+            </motion.p>
+          </motion.div>
+        </>
+      )}
+      
+      {/* Sidebar - only show when not expanded */}
+      {!showPhase && (
+        <div className="fixed left-0 top-0 bottom-0 w-16 md:w-20 z-30 flex flex-col">
+          <div className="flex-1 flex flex-col items-center justify-between py-4 md:py-6 bg-black/60 border-r border-purple-500/30 backdrop-blur-sm px-2">
+            
+            <div className="flex-1 flex flex-col items-center justify-center gap-3 md:gap-4">
+          {Array.from({ length: TOTAL_PHASES }).map((_, index) => {
+            const isCompleted = index < COMPLETED_PHASES
+            
+            return (
+              <div key={index} className="relative flex flex-col items-center">
+                {/* Circle indicator - clickable */}
+                <motion.div 
+                  className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center border-2 cursor-pointer ${
+                    isCompleted 
+                      ? 'bg-purple-600 border-purple-500 hover:scale-125' 
+                      : 'bg-gray-800 border-gray-700'
+                  }`}
+                  style={{ 
+                    boxShadow: isCompleted ? '0 0 10px rgba(139,92,246,0.8)' : 'none'
+                  }}
+                  animate={isCompleted ? {
+                    boxShadow: ['0 0 3px rgba(139,92,246,0.4)', '0 0 15px rgba(139,92,246,0.8)', '0 0 3px rgba(139,92,246,0.4)']
+                  } : {}}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                  whileHover={isCompleted ? { scale: 1.25 } : { scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handlePhaseClick(index)}
+                >
+                  {/* Checkmark for completed */}
+                  {isCompleted && (
+                    <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                  
+                  {/* Number for pending */}
+                  {!isCompleted && (
+                    <span className="text-gray-500 text-xs md:text-sm font-bold">{index + 1}</span>
+                  )}
+                </motion.div>
+                
+                {/* Connector line */}
+                {index < TOTAL_PHASES - 1 && (
+                  <div 
+                    className={`w-0.5 h-4 md:h-6 ${isCompleted ? 'bg-purple-600' : 'bg-gray-800'}`}
+                  />
+                )}
+              </div>
+            )
+          })}
+        </div>
+        
+        {/* Progress number at bottom */}
+        <div className="text-center">
+          <span className="text-purple-400 text-2xl md:text-3xl font-bold">{COMPLETED_PHASES}</span>
+          <span className="text-gray-500 text-sm md:text-base">/{TOTAL_PHASES}</span>
+        </div>
+      </div>
+        </div>
+      )}
+    </>
+  )
+}
+
 function App() {
   const [isExpired, setIsExpired] = useState(false)
   const [showBook, setShowBook] = useState(false)
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+  const [phaseMessage, setPhaseMessage] = useState(null)
   
-  const characterImage = '/Imagen carta/365 THE BEGINNING.png'
+  // Detectar si hay un 19 en cualquier posición
+  const hasNineteen = useMemo(() => {
+    const daysStr = String(timeLeft.days).padStart(3, '0')
+    const hoursStr = String(timeLeft.hours).padStart(2, '0')
+    const minutesStr = String(timeLeft.minutes).padStart(2, '0')
+    const secondsStr = String(timeLeft.seconds || 0).padStart(2, '0')
+    
+    return daysStr.includes('19') || hoursStr.includes('19') || minutesStr.includes('19') || secondsStr.includes('19')
+  }, [timeLeft])
+  
+  const characterImage = '/images/book-cover.png'
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -635,13 +1043,37 @@ function App() {
       if (difference <= 0) {
         setIsExpired(true)
         clearInterval(timer)
+        return
       }
+      
+      setTimeLeft({
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((difference % (1000 * 60)) / 1000)
+      })
     }, 1000)
     return () => clearInterval(timer)
   }, [])
 
   return (
     <div className="min-h-screen w-screen bg-[#0a0a0a] relative overflow-hidden">
+      {/* Phases Progress */}
+      <PhasesProgress setPhaseMessage={setPhaseMessage} />
+      
+      {/* Phase message toast - shows when clicking phase circles */}
+      {phaseMessage && (
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 50 }}
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-purple-900/90 border border-purple-500 px-6 py-3 rounded-lg backdrop-blur-md"
+          onClick={() => setPhaseMessage(null)}
+        >
+          <p className="text-purple-300 text-lg">Click para cerrar</p>
+        </motion.div>
+      )}
+      
       {/* Shader Background - Grid + Plasma */}
       <ShaderBackground />
       
@@ -672,12 +1104,14 @@ function App() {
           <Book characterImage={characterImage} />
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <FlipCountdown targetDate={TARGET_DATE} />
+            <FlipCountdown targetDate={TARGET_DATE} onTimeUpdate={setTimeLeft} />
           </motion.div>
         )}
       </main>
       
       <InteractiveRobot onClick={() => setShowBook(!showBook)} showBook={showBook} />
+      
+      <UnicornEasterEgg isVisible={hasNineteen && !showBook} />
     </div>
   )
 }
@@ -698,4 +1132,6 @@ function FloatingTime({ value, label }) {
   )
 }
 
+// Delete: FloatingTime nunca se usa
+// Delete: cn nunca se usa
 export default App
