@@ -101,7 +101,7 @@ const FlipCountdown = ({ targetDate, onTimeUpdate }) => {
             <FlipUnit key={`days-${index}`} digit={digit} />
           ))}
         </div>
-        <span className="text-purple-400/70 text-lg md:text-2xl mt-3 uppercase tracking-[0.5em] font-semibold">DAYS</span>
+        <span className="text-purple-400/70 text-lg md:text-2xl mt-3 uppercase tracking-[0.5em] font-semibold">dias</span>
       </div>
       
       <span className="text-purple-400/50 text-5xl md:text-7xl font-light -mt-10">:</span>
@@ -113,7 +113,7 @@ const FlipCountdown = ({ targetDate, onTimeUpdate }) => {
             <FlipUnit key={`hours-${index}`} digit={digit} />
           ))}
         </div>
-        <span className="text-purple-400/70 text-lg md:text-2xl mt-3 uppercase tracking-[0.5em] font-semibold">HOURS</span>
+        <span className="text-purple-400/70 text-lg md:text-2xl mt-3 uppercase tracking-[0.5em] font-semibold">horas</span>
       </div>
       
       <span className="text-purple-400/50 text-5xl md:text-7xl font-light -mt-10">:</span>
@@ -125,7 +125,7 @@ const FlipCountdown = ({ targetDate, onTimeUpdate }) => {
             <FlipUnit key={`minutes-${index}`} digit={digit} />
           ))}
         </div>
-        <span className="text-purple-400/70 text-lg md:text-2xl mt-3 uppercase tracking-[0.5em] font-semibold">MINUTES</span>
+        <span className="text-purple-400/70 text-lg md:text-2xl mt-3 uppercase tracking-[0.5em] font-semibold">minutos</span>
       </div>
       
       <span className="text-purple-400/50 text-5xl md:text-7xl font-light -mt-10">:</span>
@@ -137,7 +137,7 @@ const FlipCountdown = ({ targetDate, onTimeUpdate }) => {
             <FlipUnit key={`seconds-${index}`} digit={digit} />
           ))}
         </div>
-        <span className="text-purple-400/70 text-lg md:text-2xl mt-3 uppercase tracking-[0.5em] font-semibold">SECONDS</span>
+        <span className="text-purple-400/70 text-lg md:text-2xl mt-3 uppercase tracking-[0.5em] font-semibold">segundos</span>
       </div>
     </div>
   )
@@ -863,9 +863,9 @@ const PHASE_SUBTITLES = [
   // Fase 6 (index 5)
   "Esta fase esta en progreso. Pronto podras ver su contenido.",
   // Fase 7 (index 6)
-  "Casi llegas a la ultima fase. Estas haciendo un gran trabajo.",
+  "Esta fase es especial porque es la ultima antes de que acaba todo.",
   // Fase 8 (index 7)
-  "Fase final! Esta fase sera muy especial cuando este lista."
+  "Esta fase es tuya y por ende la ultima de el proyecto."
 ]
 
 function PhasesProgress({ setPhaseMessage }) {
