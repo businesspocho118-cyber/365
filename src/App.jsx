@@ -848,7 +848,7 @@ PIPO
 
 // --- Phases Progress Component (EXPANDABLE) ---
 const TOTAL_PHASES = 8
-const COMPLETED_PHASES = 4
+const COMPLETED_PHASES = 5
 const PHASE_SUBTITLES = [
   // Fase 1 (index 0)
   "En esta fase tendras que resolver un misterio orientado a la tecnologia aunque la respuesta no tiene que ver nada con la tecnologia. Disfrutaras sabiendo en como es la primera fase de el proyecto. Te adentraras un poco mas en el ambito tecnologico y asi podras resolverlo. Esta primera fase no resulta o quiere ser dificil, si no que quiere hacerte saber la mecanica de las fases y como seguiran estas.",
@@ -859,7 +859,7 @@ const PHASE_SUBTITLES = [
   // Fase 4 (index 3)
   "Esta fase es mi favorita. Se va a tratar sobre videojuegos. Se que tu no te centras mucho en eso pero al menos intentare que te gusten un poco mas. Tengo que decir que esta es la mitad de las fases totales y que por eso tambien sera importante y diferente a las demas.",
   // Fase 5 (index 4)
-  "Esta fase aun no esta lista. Debes ser paciente para ver de que tratara.",
+  "Esta fase es un cambio de paradigma va a ser una fase diferente completamente y que se debera resolver de una manera diferente no tiene tematica solo tiene un cambio de entender el proyecto va a ser dificil asi que espero que tengas tiempo para desarrollarla",
   // Fase 6 (index 5)
   "Esta fase esta en progreso. Pronto podras ver su contenido.",
   // Fase 7 (index 6)
