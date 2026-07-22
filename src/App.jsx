@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { motion } from 'framer-motion'
 
-const TARGET_DATE = new Date('2026-10-19T00:00:00').getTime()
+const TARGET_DATE = new Date('2026-10-20T00:00:00').getTime()
 
 // --- Flip Unit ---
 const FlipUnit = ({ digit }) => {
@@ -848,7 +848,7 @@ PIPO
 
 // --- Phases Progress Component (EXPANDABLE) ---
 const TOTAL_PHASES = 8
-const COMPLETED_PHASES = 5
+const COMPLETED_PHASES = 6
 const PHASE_SUBTITLES = [
   // Fase 1 (index 0)
   "En esta fase tendras que resolver un misterio orientado a la tecnologia aunque la respuesta no tiene que ver nada con la tecnologia. Disfrutaras sabiendo en como es la primera fase de el proyecto. Te adentraras un poco mas en el ambito tecnologico y asi podras resolverlo. Esta primera fase no resulta o quiere ser dificil, si no que quiere hacerte saber la mecanica de las fases y como seguiran estas.",
@@ -861,11 +861,11 @@ const PHASE_SUBTITLES = [
   // Fase 5 (index 4)
   "Esta fase es un cambio de paradigma va a ser una fase diferente completamente y que se debera resolver de una manera diferente no tiene tematica solo tiene un cambio de entender el proyecto va a ser dificil asi que espero que tengas tiempo para desarrollarla",
   // Fase 6 (index 5)
-  "Esta fase esta en progreso. Pronto podras ver su contenido.",
+  "Esta fase \"Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝  HACKEO INTERNO DETECTADO_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞",
   // Fase 7 (index 6)
-  "Esta fase es especial porque es la ultima antes de que acaba todo.",
+  "Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞ INFORMACION NO DISPONIBLE Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞",
   // Fase 8 (index 7)
-  "Esta fase es tuya y por ende la ultima de el proyecto."
+  "Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞ INFORMACION NO DISPONIBLE Ḛ̴̵̵̡͖͉̰͕̩̞̜̖̯̳̼͎̘̺̦̰̄ͤ͒́͛̒ͪ̃ͥͨͪ͡R̹̂͑͝_̵̧̝̺̤̉̅̈́ͯ͊̾͒̔̒_̮͙̥̗͉̹͉̎̈̍̾ͦͥͤ̃̎͊͗ͣ̽̕͡Ŗ̨̡̣̪̺͕̯̞̱͓̲͙͕̻̝̲ͪͨͭ̌̑͂ͣ̒̊ͯͤ̽͗ͨͩ̉ͬ͋́̉̅̓ͥ̕̚͜͜͢͞Ó̡̜̲̩̤͍̖̂͂̚R̦͔͍̊ͩͭ͞"
 ]
 
 function PhasesProgress({ setPhaseMessage }) {
@@ -873,17 +873,9 @@ function PhasesProgress({ setPhaseMessage }) {
   const [locked, setLocked] = useState(false)
 
   const handlePhaseClick = (index) => {
-    const isCompleted = index < COMPLETED_PHASES
-    
-    if (isCompleted) {
-      setSelectedPhase(index + 1)
-      setLocked(true)
-      setPhaseMessage?.(PHASE_SUBTITLES[index])
-    } else {
-      setSelectedPhase(index + 1)
-      setLocked(true)
-      setPhaseMessage?.(PHASE_SUBTITLES[index])
-    }
+    setSelectedPhase(index + 1)
+    setLocked(true)
+    setPhaseMessage?.(PHASE_SUBTITLES[index])
   }
 
   const handleClose = () => {
@@ -918,11 +910,26 @@ function PhasesProgress({ setPhaseMessage }) {
           >
             {/* Big FASE title */}
             <motion.h1 
-              className="text-7xl md:text-9xl font-black text-purple-400 mb-6"
-              style={{ textShadow: '0 0 50px rgba(139,92,246,0.9)', fontFamily: '"Bebas Neue", sans-serif' }}
+              className={`text-7xl md:text-9xl font-black mb-6 ${selectedPhase >= 6 ? 'text-red-500 font-mono' : 'text-purple-400'}`}
+              style={{ 
+                textShadow: selectedPhase >= 6 ? '0 0 50px rgba(239,68,68,0.9)' : '0 0 50px rgba(139,92,246,0.9)', 
+                fontFamily: selectedPhase >= 6 ? '"Orbitron", monospace' : '"Bebas Neue", sans-serif' 
+              }}
               initial={{ opacity: 0, y: -30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              animate={selectedPhase >= 6 ? { 
+                opacity: [1, 0.4, 1, 0.1, 0.9, 0.2, 1], 
+                x: [0, -3, 3, -2, 2, 0],
+                y: 0 
+              } : { 
+                opacity: 1, 
+                y: 0 
+              }}
+              transition={selectedPhase >= 6 ? { 
+                opacity: { repeat: Infinity, duration: 0.4 },
+                x: { repeat: Infinity, duration: 0.25 }
+              } : { 
+                duration: 0.5 
+              }}
             >
               FASE {selectedPhase}
             </motion.h1>
@@ -930,11 +937,18 @@ function PhasesProgress({ setPhaseMessage }) {
             {/* Subtitle in black box */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-black/80 border border-purple-500/50 rounded-xl px-8 py-6 max-w-xl"
+              animate={selectedPhase >= 6 ? {
+                opacity: 1,
+                y: 0,
+                borderColor: ['rgba(239,68,68,0.5)', 'rgba(239,68,68,0.1)', 'rgba(239,68,68,0.9)', 'rgba(239,68,68,0.3)']
+              } : { 
+                opacity: 1, 
+                y: 0 
+              }}
+              transition={selectedPhase >= 6 ? { borderColor: { repeat: Infinity, duration: 0.5 } } : { duration: 0.5, delay: 0.2 }}
+              className={`bg-black/85 border rounded-xl px-8 py-6 max-w-xl ${selectedPhase >= 6 ? 'border-red-500/50 shadow-[0_0_25px_rgba(239,68,68,0.25)]' : 'border-purple-500/50'}`}
             >
-              <p className="text-purple-200 text-lg md:text-xl text-center leading-relaxed" style={{ fontFamily: '"Inter", sans-serif' }}>
+              <p className={`text-center leading-relaxed ${selectedPhase >= 6 ? 'text-red-400 font-mono text-base break-words' : 'text-purple-200 text-lg md:text-xl'}`} style={{ fontFamily: selectedPhase >= 6 ? '"Orbitron", monospace' : '"Inter", sans-serif' }}>
                 {PHASE_SUBTITLES[selectedPhase - 1]}
               </p>
             </motion.div>
@@ -960,6 +974,7 @@ function PhasesProgress({ setPhaseMessage }) {
             <div className="flex-1 flex flex-col items-center justify-center gap-3 md:gap-4">
           {Array.from({ length: TOTAL_PHASES }).map((_, index) => {
             const isCompleted = index < COMPLETED_PHASES
+            const isGlitchPhase = index >= 5 // Fases 6, 7 y 8 (índices 5, 6 y 7)
             
             return (
               <div key={index} className="relative flex flex-col items-center">
@@ -967,37 +982,58 @@ function PhasesProgress({ setPhaseMessage }) {
                 <motion.div 
                   className={`w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center border-2 cursor-pointer ${
                     isCompleted 
-                      ? 'bg-purple-600 border-purple-500 hover:scale-125' 
-                      : 'bg-gray-800 border-gray-700'
+                      ? (isGlitchPhase ? 'bg-red-950 border-red-500' : 'bg-purple-600 border-purple-500') 
+                      : (isGlitchPhase ? 'bg-red-950 border-red-900' : 'bg-gray-800 border-gray-700')
                   }`}
                   style={{ 
-                    boxShadow: isCompleted ? '0 0 10px rgba(139,92,246,0.8)' : 'none'
+                    boxShadow: isCompleted 
+                      ? (isGlitchPhase ? '0 0 10px rgba(239,68,68,0.8)' : '0 0 10px rgba(139,92,246,0.8)') 
+                      : 'none'
                   }}
-                  animate={isCompleted ? {
+                  animate={isGlitchPhase ? {
+                    opacity: [1, 0.3, 1, 0.2, 0.8, 0.1, 1],
+                    scale: [1, 1.05, 0.95, 1],
+                    boxShadow: [
+                      '0 0 5px rgba(239,68,68,0.4)',
+                      '0 0 20px rgba(239,68,68,0.9)',
+                      '0 0 5px rgba(239,68,68,0.4)'
+                    ]
+                  } : (isCompleted ? {
                     boxShadow: ['0 0 3px rgba(139,92,246,0.4)', '0 0 15px rgba(139,92,246,0.8)', '0 0 3px rgba(139,92,246,0.4)']
-                  } : {}}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  whileHover={isCompleted ? { scale: 1.25 } : { scale: 1.1 }}
+                  } : {})}
+                  transition={isGlitchPhase ? {
+                    opacity: { repeat: Infinity, duration: 0.35 },
+                    scale: { repeat: Infinity, duration: 0.5 },
+                    boxShadow: { repeat: Infinity, duration: 0.6 }
+                  } : {
+                    repeat: Infinity,
+                    duration: 2
+                  }}
+                  whileHover={{ scale: 1.25 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handlePhaseClick(index)}
                 >
                   {/* Checkmark for completed */}
                   {isCompleted && (
-                    <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                    <svg className={`w-4 h-4 md:w-5 md:h-5 ${isGlitchPhase ? 'text-red-500' : 'text-white'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   )}
                   
                   {/* Number for pending */}
                   {!isCompleted && (
-                    <span className="text-gray-500 text-xs md:text-sm font-bold">{index + 1}</span>
+                    <span className={`${isGlitchPhase ? 'text-red-700' : 'text-gray-500'} text-xs md:text-sm font-bold`}>{index + 1}</span>
                   )}
                 </motion.div>
                 
                 {/* Connector line */}
                 {index < TOTAL_PHASES - 1 && (
                   <div 
-                    className={`w-0.5 h-4 md:h-6 ${isCompleted ? 'bg-purple-600' : 'bg-gray-800'}`}
+                    className={`w-0.5 h-4 md:h-6 ${
+                      isCompleted 
+                        ? (index >= 4 ? 'bg-red-500/50' : 'bg-purple-600') 
+                        : (index >= 4 ? 'bg-red-950/40' : 'bg-gray-800')
+                    }`}
                   />
                 )}
               </div>
