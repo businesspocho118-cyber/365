@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { motion } from 'framer-motion'
 
-const TARGET_DATE = new Date('2026-10-19T00:00:00').getTime()
+const TARGET_DATE = new Date('2026-10-20T00:00:00').getTime()
 
 // --- Flip Unit ---
 const FlipUnit = ({ digit }) => {
